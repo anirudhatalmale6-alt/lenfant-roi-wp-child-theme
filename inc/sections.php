@@ -14,14 +14,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The ten gold guide lines that make up the arabesque motif.
+ * The gold guide lines that make up the arabesque motif.
  *
- * They are plain divs - each one is a 1px line, rotated by CSS. Keeping them in
- * markup rather than an SVG is what lets them draw themselves on scroll.
+ * Each line is a plain 1px div the full height of the block, rotated by CSS.
+ * Markup rather than an SVG is what lets every one of them draw itself along
+ * its own length.
+ *
+ * Not every block carries the same lines. The hero uses both pairs of
+ * diagonals; the blocks below it drop the upper pair and add a centre
+ * vertical instead. Both sets are read off the original.
+ *
+ * @param string $variant 'hero' or 'section'.
+ * @return string
  */
-function lr_arabesque() {
+function lr_arabesque( $variant = 'hero' ) {
+	$keys = 'hero' === $variant
+		? array( 'l1', 'l2', 'l3', 'l4', 'l5', 'r1', 'r2', 'r3', 'r4', 'r5' )
+		: array( 'm1', 'l1', 'l2', 'l3', 'l5', 'r1', 'r2', 'r3', 'r5' );
+
 	$out = '<div class="section__arabesque arabesque" aria-hidden="true">';
-	foreach ( array( 'l1', 'l2', 'l3', 'l4', 'l5', 'r1', 'r2', 'r3', 'r4', 'r5' ) as $key ) {
+	foreach ( $keys as $key ) {
 		$out .= '<div class="arabesque__line arabesque__line-' . $key . '"></div>';
 	}
 	$out .= '</div>';
@@ -181,7 +193,7 @@ function lr_section_about() {
 	ob_start();
 	?>
 	<section class="section-custom-about" id="about">
-		<?php echo lr_arabesque(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
+		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 		<div class="section__wrapper container">
 
 			<div class="section__header">

@@ -26,9 +26,28 @@
 		media.style.setProperty('--media-progress', p.toFixed(4));
 	}
 
+	/* --- 1b. arabesque blocks only run while they are on screen ------------ */
+	/* Ten lines animating forever in a section nobody is looking at is work the
+	   browser does not need to do. This observer toggles both ways, unlike the
+	   entrance one below which fires once and lets go. */
+	function initArabesque() {
+		var blocks = document.querySelectorAll('.arabesque');
+		if (!blocks.length) return;
+		if (reduced || !('IntersectionObserver' in window)) {
+			Array.prototype.forEach.call(blocks, function (el) { el.classList.add('is-inview'); });
+			return;
+		}
+		var io = new IntersectionObserver(function (entries) {
+			entries.forEach(function (entry) {
+				entry.target.classList.toggle('is-inview', entry.isIntersecting);
+			});
+		}, { rootMargin: '200px 0px' });
+		Array.prototype.forEach.call(blocks, function (el) { io.observe(el); });
+	}
+
 	/* --- 2. in-view entrance ---------------------------------------------- */
 	function initInView() {
-		var targets = document.querySelectorAll('[data-animation], .section__arabesque');
+		var targets = document.querySelectorAll('[data-animation]');
 		if (reduced || !('IntersectionObserver' in window)) {
 			Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-inview'); });
 			document.body.classList.add('is-inview');
@@ -108,6 +127,7 @@
 	}
 
 	root.classList.remove('no-js');
+	initArabesque();
 	initInView();
 	updateMedia();
 	window.addEventListener('scroll', onScroll, { passive: true });

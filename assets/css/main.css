@@ -151,11 +151,12 @@ body.admin-bar .page__header { top: 32px; }
 body.menu-is-open { overflow: hidden; }
 
 /* --- arabesque (the gold guide-line motif) -------------------------------- */
-/* The motif is a fixed-height block pinned near the top of its section, not a
-   full-height overlay - that is what keeps the crossings off the first screen. */
+/* A fixed-height block pinned to the top of its section, not a full-height
+   overlay. Every line is one 1px-wide div the full height of the block; the
+   horizontals and diagonals are the same div rotated, which is what lets a
+   single clip-path animation draw all of them along their own length. */
 .arabesque {
-	--arabesque-height: 684px;
-	--arabesque-length: 684px;
+	--arabesque-height: 760px;
 	position: absolute; top: 0; left: 0; right: 0;
 	width: min(1050px, 100% - var(--arabesque-offset) * 2);
 	margin-inline: auto;
@@ -163,44 +164,65 @@ body.menu-is-open { overflow: hidden; }
 	z-index: 0; pointer-events: none;
 	overflow: visible;
 }
-.arabesque__line { position: absolute; background: var(--color-primary); opacity: .66; }
+.arabesque__line {
+	position: absolute; top: 0;
+	width: 1px; height: 100%;
+	background: var(--color-primary); opacity: .66;
+	transform-origin: 50% 50%;
+	will-change: clip-path;
+}
 
 /* verticals */
-.arabesque__line-l1, .arabesque__line-r1 { top: 0; width: 1px; height: 100%; }
-.arabesque__line-l2, .arabesque__line-r2 { top: 12.5%; width: 1px; height: 75%; }
 .arabesque__line-l1 { left: 0; }
 .arabesque__line-r1 { right: 0; }
+/* 64px down and three quarters tall - the same in every block, measured */
+.arabesque__line-l2, .arabesque__line-r2 { top: 64px; height: 75%; }
 .arabesque__line-l2 { left: 20px; }
 .arabesque__line-r2 { right: 20px; }
+/* centre vertical, half height - only the lower blocks carry it */
+.arabesque__line-m1 { left: 50%; height: 50%; }
 
-/* horizontal through the crossing point */
-.arabesque__line-l3, .arabesque__line-r3 {
-	top: 50%; width: var(--arabesque-length); height: 1px;
+/* horizontal through the crossing point: the same vertical line laid flat */
+.arabesque__line-l3 { left: 0; transform: rotate(-90deg); }
+.arabesque__line-r3 { right: 0; transform: rotate(90deg); }
+
+/* diagonals - l4/r4 cross at mid-height, l5/r5 sit 0.71 of a length lower.
+   The angles are 180 degrees apart from the obvious ones on purpose: the clip
+   draws from the element's own top end, so the rotation decides which end each
+   diagonal grows from. */
+.arabesque__line-l4 { left: 0; transform: rotate(-45deg); }
+.arabesque__line-r4 { right: 0; transform: rotate(45deg); }
+.arabesque__line-l5 { left: 0; transform: translateY(calc(var(--arabesque-height) * .71)) rotate(-135deg); }
+.arabesque__line-r5 { right: 0; transform: translateY(calc(var(--arabesque-height) * .71)) rotate(135deg); }
+
+/* The draw: each line grows from nothing to its full length and retreats again,
+   forever. The -10px bleed stops the leading end fraying on a 1px line.
+   Curve fitted to the original's own timing - it is a hard ease-in on the way
+   out and its mirror on the way back, not a sine. */
+@keyframes lr-draw {
+	0%   { clip-path: inset(0 0 100%);                   animation-timing-function: cubic-bezier(.75,.05,.6,.55); }
+	50%  { clip-path: inset(-10px -10px calc(0% - 10px)); animation-timing-function: cubic-bezier(.4,.45,.25,.95); }
+	100% { clip-path: inset(0 0 100%); }
 }
-.arabesque__line-l3 { left: 0; transform: translateX(-50%); }
-.arabesque__line-r3 { right: 0; transform: translateX(50%); }
+.arabesque__line { clip-path: inset(0 0 100%); animation: lr-draw 6.02s infinite; }
 
-/* diagonals - l4/r4 cross at mid-height, l5/r5 sit one motif-length lower */
-.arabesque__line-l4, .arabesque__line-r4,
-.arabesque__line-l5, .arabesque__line-r5 {
-	width: 1px; height: var(--arabesque-length); transform-origin: 50% 50%;
-}
-.arabesque__line-l4, .arabesque__line-r4 { top: 50%; }
-.arabesque__line-l5, .arabesque__line-r5 { top: calc(50% + var(--arabesque-length) * .71); }
-.arabesque__line-l4 { left: 0; transform: translateY(-50%) rotate(-45deg); }
-.arabesque__line-r4 { right: 0; transform: translateY(-50%) rotate(45deg); }
-.arabesque__line-l5 { left: 0; transform: translateY(-50%) rotate(45deg); }
-.arabesque__line-r5 { right: 0; transform: translateY(-50%) rotate(-45deg); }
+/* Periods and offsets read off the original: l1 runs on a 10s cycle, the rest
+   on 6s, each started a second apart so they never march in step. The delays
+   are negative so every line starts partway through its own cycle rather than
+   all of them waiting at zero on page load.
+   Order matters - these put each line at the same point in the sequence the
+   original uses: l3 peaks first, l5 three seconds later, then l4, then l2.
+   A line peaks at (duration / 2 - delay) into the page's life, so a larger
+   delay pulls its turn *earlier*, not later. */
+.arabesque__line-l1, .arabesque__line-r1 { animation-duration: 10.04s; }
+.arabesque__line-l3, .arabesque__line-r3 { animation-delay: -3.01s; }
+.arabesque__line-l5, .arabesque__line-r5 { animation-delay: 0s; }
+.arabesque__line-l4, .arabesque__line-r4 { animation-delay: -5.02s; }
+.arabesque__line-l2, .arabesque__line-r2 { animation-delay: -4.01s; }
+.arabesque__line-m1 { animation-delay: -2.01s; }
 
-/* reveal: the lines draw themselves downward */
-[data-animation="clip-to-bottom"],
-.arabesque [data-animation] { will-change: clip-path; }
-.arabesque__line { clip-path: inset(0 0 100% 0); transition: clip-path 1.4s cubic-bezier(.22,1,.36,1); }
-.is-inview .arabesque__line { clip-path: inset(0 0 0 0); }
-.arabesque__line-l2, .arabesque__line-r2 { transition-delay: .1s; }
-.arabesque__line-l3, .arabesque__line-r3 { transition-delay: .2s; }
-.arabesque__line-l4, .arabesque__line-r4 { transition-delay: .3s; }
-.arabesque__line-l5, .arabesque__line-r5 { transition-delay: .4s; }
+/* nothing to animate while the block is off screen */
+.arabesque:not(.is-inview) .arabesque__line { animation-play-state: paused; }
 
 /* --- generic reveal animations -------------------------------------------- */
 [data-animation="reveal"] {
@@ -223,7 +245,9 @@ body.menu-is-open { overflow: hidden; }
 /* Without JS nothing would ever get .is-inview, so everything would sit at
    opacity 0. Show the finished state instead of an empty page. */
 .no-js [data-animation] { opacity: 1 !important; transform: none !important; }
-.no-js .arabesque__line { clip-path: none !important; }
+/* the draw is pure CSS, but it is JS that marks a block on screen - without JS
+   it would stay paused at zero length, so show the lines finished instead */
+.no-js .arabesque__line { animation: none !important; clip-path: none !important; }
 
 /* --- hero ----------------------------------------------------------------- */
 .section-hero-page-home { position: relative; padding-top: var(--height-header-nav); }
@@ -330,7 +354,7 @@ body.menu-is-open { overflow: hidden; }
 
 /* --- about ---------------------------------------------------------------- */
 .section-custom-about { position: relative; padding: 10rem 0 12rem; }
-.section-custom-about .arabesque { --arabesque-height: 521px; --arabesque-length: 684px; }
+.section-custom-about .arabesque { --arabesque-height: 521px; }
 .section-custom-about .section__wrapper {
 	position: relative; z-index: 1;
 	display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
