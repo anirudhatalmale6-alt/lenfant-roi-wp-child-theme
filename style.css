@@ -1,0 +1,15 @@
+/*
+Theme Name: L'Enfant Roi Layout
+Theme URI: https://demo.shividesigns.com/
+Description: Child theme of Hello Elementor carrying the L'Enfant Roi homepage layout - design tokens, header, hero and the scroll-linked animations. Section content is editable from Appearance > Customize > "Homepage layout".
+Author: Anirudha Talmale
+Version: 1.0.0
+Requires PHP: 7.4
+Template: hello-elementor
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: lenfant-roi-child
+*/
+
+/* All styling lives in assets/css/main.css so it can be edited on its own.
+   This file only carries the theme header WordPress reads. */

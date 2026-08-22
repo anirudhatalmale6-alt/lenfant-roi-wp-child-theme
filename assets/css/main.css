@@ -1,0 +1,393 @@
+/* ==========================================================================
+   L'Enfant Roi Layout - child theme of Hello Elementor
+   Design tokens read off the original site, not guessed.
+   Colours can be overridden from Appearance > Customize > Homepage layout.
+   ========================================================================== */
+
+:root {
+	/* type */
+	--font-family-primary:   "Poppins", sans-serif;          /* original: Poppins (free) */
+	--font-family-secondary: "Libre Caslon Display", serif;  /* original: Caslon CP (licensed) */
+	--font-family-tertiary:  "Archivo", sans-serif;          /* original: Din Medium (licensed) */
+
+	--font-size-default: 1.6rem;
+	--font-size-h1: clamp(4.4rem, calc(1rem + 5vw), 9rem);
+	--font-size-h2: clamp(3.8rem, calc(1rem + 4vw), 7rem);
+	--font-size-h3: clamp(3rem,   calc(1rem + 3vw), 5rem);
+	--font-size-h5: clamp(2.2rem, calc(1rem + 1vw), 2.7rem);
+	--font-size-xs: 1.4rem;
+
+	/* colour */
+	--color-light: #fff;
+	--color-primary: #d7a33d;
+	--color-primary-light: #e1ba6e;
+	--color-secondary: #02162a;
+	--color-secondary-light: #e8edf1;
+	--color-tertiary: #1d1d1b;
+	--color-text: var(--color-tertiary);
+
+	/* metrics */
+	--height-header-nav: 100px;
+	--arabesque-offset: 3vw;
+	--media-rounded: 3em;
+	--media-offset: 5%;
+	--toolbar-icon-width: 55px;
+	--container: 1230px;
+}
+
+/* --- reset ---------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 62.5%; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+	margin: 0;
+	font-family: var(--font-family-primary);
+	font-size: var(--font-size-default);
+	line-height: 1.6;
+	color: var(--color-text);
+	background: var(--color-light);
+	overflow-x: hidden;
+}
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, p { margin: 0; }
+button { font: inherit; border: 0; background: none; cursor: pointer; }
+
+.container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: 2.5rem; }
+.visually-hidden {
+	position: absolute; width: 1px; height: 1px; overflow: hidden;
+	clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* --- header --------------------------------------------------------------- */
+.page__header {
+	position: fixed; inset: 0 0 auto 0; z-index: 60;
+	height: var(--height-header-nav);
+	display: flex; align-items: center;
+	padding-inline: 6.4rem;
+	background: var(--color-light);
+	transition: transform .45s cubic-bezier(.22,1,.36,1);
+}
+/* the original tucks the bar away while you scroll down and brings it back on the way up */
+.page__header.is-hidden { transform: translateY(-100%); }
+/* logged-in users get the WordPress admin bar above everything - drop below it */
+body.admin-bar .page__header { top: 32px; }
+@media screen and (max-width: 782px) { body.admin-bar .page__header { top: 46px; } }
+.header__logo { flex: 0 0 auto; display: block; }
+.header__logo svg,
+.header__logo img { width: 165px; height: auto; color: var(--color-tertiary); }
+
+.skip-link:focus {
+	position: fixed; top: 1rem; left: 1rem; z-index: 100;
+	width: auto; height: auto; overflow: visible; clip: auto; clip-path: none;
+	padding: 1rem 1.6rem; background: var(--color-secondary); color: var(--color-light);
+}
+/* 80px between the language pair and the button. Read off the rendered page -
+   on the original those two labels are drawn by CSS, not text, so they cannot
+   be measured from the DOM. */
+.header__nav { margin-left: auto; display: flex; align-items: center; gap: 8rem; }
+
+.lang { display: flex; gap: 1.4rem; font-size: 1.6rem; font-weight: 500; letter-spacing: .04em; }
+.lang a { color: #8c8c8c; transition: color .25s ease; }
+.lang a:hover { color: var(--color-primary); }
+.lang a.is-active { color: var(--color-primary); }
+
+/* 53px, transparent, 1px gold ring, 25x3px dark bars - measured off the original */
+.burger {
+	width: 53px; height: 53px; border-radius: 50%;
+	background: transparent;
+	border: 1px solid var(--color-primary);
+	display: grid; place-items: center; gap: 0;
+	transition: background .3s ease, border-color .3s ease;
+}
+.burger:hover { background: var(--color-primary); }
+.burger span {
+	display: block; width: 25px; height: 3px; background: var(--color-tertiary);
+	grid-area: 1 / 1; transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .2s ease, background .3s ease;
+}
+.burger span:nth-child(1) { transform: translateY(-7px); }
+.burger span:nth-child(3) { transform: translateY(7px); }
+.burger:hover span:nth-child(1) { transform: translateY(-9px); }
+.burger:hover span:nth-child(3) { transform: translateY(9px); }
+
+/* the round button turns into a close cross while the menu is open. The white
+   header bar stays on top of the overlay, so the bars stay dark. */
+.burger.is-open { background: transparent; }
+.burger.is-open span:nth-child(1) { transform: rotate(45deg); }
+.burger.is-open span:nth-child(2) { opacity: 0; }
+.burger.is-open span:nth-child(3) { transform: rotate(-45deg); }
+
+/* --- full-screen menu ----------------------------------------------------- */
+.menu-overlay {
+	position: fixed; inset: 0; z-index: 55;
+	display: flex; align-items: center; justify-content: center;
+	padding: var(--height-header-nav) 2.5rem 2.5rem;
+	background: var(--color-secondary);
+	opacity: 0; visibility: hidden;
+	transition: opacity .45s ease, visibility .45s ease;
+}
+.menu-overlay.is-open { opacity: 1; visibility: visible; }
+.menu-overlay__list {
+	list-style: none; margin: 0; padding: 0;
+	text-align: center;
+	display: flex; flex-direction: column; gap: 1.6rem;
+}
+.menu-overlay__list a {
+	display: inline-block;
+	font-family: var(--font-family-secondary);
+	font-size: var(--font-size-h3);
+	line-height: 1.2; text-transform: uppercase;
+	color: var(--color-light);
+	transition: color .25s ease;
+}
+.menu-overlay__list a:hover,
+.menu-overlay__list .current-menu-item > a { color: var(--color-primary); }
+.menu-overlay__list .sub-menu {
+	list-style: none; margin: .8rem 0 0; padding: 0;
+	display: flex; flex-direction: column; gap: .4rem;
+}
+.menu-overlay__list .sub-menu a { font-family: var(--font-family-primary); font-size: var(--font-size-default); }
+.menu-overlay__empty { color: var(--color-light); max-width: 42rem; text-align: center; }
+
+body.menu-is-open { overflow: hidden; }
+
+/* --- arabesque (the gold guide-line motif) -------------------------------- */
+/* The motif is a fixed-height block pinned near the top of its section, not a
+   full-height overlay - that is what keeps the crossings off the first screen. */
+.arabesque {
+	--arabesque-height: 684px;
+	--arabesque-length: 684px;
+	position: absolute; top: 0; left: 0; right: 0;
+	width: min(1050px, 100% - var(--arabesque-offset) * 2);
+	margin-inline: auto;
+	height: var(--arabesque-height);
+	z-index: 0; pointer-events: none;
+	overflow: visible;
+}
+.arabesque__line { position: absolute; background: var(--color-primary); opacity: .66; }
+
+/* verticals */
+.arabesque__line-l1, .arabesque__line-r1 { top: 0; width: 1px; height: 100%; }
+.arabesque__line-l2, .arabesque__line-r2 { top: 12.5%; width: 1px; height: 75%; }
+.arabesque__line-l1 { left: 0; }
+.arabesque__line-r1 { right: 0; }
+.arabesque__line-l2 { left: 20px; }
+.arabesque__line-r2 { right: 20px; }
+
+/* horizontal through the crossing point */
+.arabesque__line-l3, .arabesque__line-r3 {
+	top: 50%; width: var(--arabesque-length); height: 1px;
+}
+.arabesque__line-l3 { left: 0; transform: translateX(-50%); }
+.arabesque__line-r3 { right: 0; transform: translateX(50%); }
+
+/* diagonals - l4/r4 cross at mid-height, l5/r5 sit one motif-length lower */
+.arabesque__line-l4, .arabesque__line-r4,
+.arabesque__line-l5, .arabesque__line-r5 {
+	width: 1px; height: var(--arabesque-length); transform-origin: 50% 50%;
+}
+.arabesque__line-l4, .arabesque__line-r4 { top: 50%; }
+.arabesque__line-l5, .arabesque__line-r5 { top: calc(50% + var(--arabesque-length) * .71); }
+.arabesque__line-l4 { left: 0; transform: translateY(-50%) rotate(-45deg); }
+.arabesque__line-r4 { right: 0; transform: translateY(-50%) rotate(45deg); }
+.arabesque__line-l5 { left: 0; transform: translateY(-50%) rotate(45deg); }
+.arabesque__line-r5 { right: 0; transform: translateY(-50%) rotate(-45deg); }
+
+/* reveal: the lines draw themselves downward */
+[data-animation="clip-to-bottom"],
+.arabesque [data-animation] { will-change: clip-path; }
+.arabesque__line { clip-path: inset(0 0 100% 0); transition: clip-path 1.4s cubic-bezier(.22,1,.36,1); }
+.is-inview .arabesque__line { clip-path: inset(0 0 0 0); }
+.arabesque__line-l2, .arabesque__line-r2 { transition-delay: .1s; }
+.arabesque__line-l3, .arabesque__line-r3 { transition-delay: .2s; }
+.arabesque__line-l4, .arabesque__line-r4 { transition-delay: .3s; }
+.arabesque__line-l5, .arabesque__line-r5 { transition-delay: .4s; }
+
+/* --- generic reveal animations -------------------------------------------- */
+[data-animation="reveal"] {
+	opacity: 0; transform: translateY(30px);
+	transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
+}
+.is-inview [data-animation="reveal"],
+[data-animation="reveal"].is-inview { opacity: 1; transform: none; }
+
+[data-animation="reveal-text"] { opacity: 0; transform: translateY(40px); transition: opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1); }
+.is-inview [data-animation="reveal-text"],
+[data-animation="reveal-text"].is-inview { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+	[data-animation] { opacity: 1 !important; transform: none !important; }
+	.arabesque__line { clip-path: none !important; }
+}
+
+/* Without JS nothing would ever get .is-inview, so everything would sit at
+   opacity 0. Show the finished state instead of an empty page. */
+.no-js [data-animation] { opacity: 1 !important; transform: none !important; }
+.no-js .arabesque__line { clip-path: none !important; }
+
+/* --- hero ----------------------------------------------------------------- */
+.section-hero-page-home { position: relative; padding-top: var(--height-header-nav); }
+.section-hero-page-home .section__wrapper { position: relative; }
+/* the hero motif starts at the very top of the page, above the wrapper padding */
+.section-hero-page-home .arabesque { top: calc(var(--height-header-nav) * -1); }
+
+.section-hero-page-home .section__header {
+	position: relative; z-index: 2;
+	padding: 5rem 0 0;
+	display: flex; flex-direction: column; align-items: center;
+	text-align: center;
+}
+/* 538px on desktop, 300px at 390px wide - both measured off the original */
+.section-hero-page-home .section__title {
+	width: 100%; max-width: min(538px, 77vw); margin: 0 auto 20px;
+	color: var(--color-tertiary);
+}
+/* "IN LUXEMBOURG" - 20px / 8px tracking, measured off the original */
+.section-hero-page-home .section__subtitle {
+	display: block; margin-top: 30px;
+	font-family: var(--font-family-tertiary);
+	font-size: 2rem; font-weight: 500;
+	letter-spacing: 8px; text-transform: uppercase;
+	line-height: 1.35;
+}
+.section-hero-page-home .section__title svg,
+.section-hero-page-home .section__title__image { width: 100%; height: auto; margin-inline: auto; }
+
+.section__mark { margin: 0; color: var(--color-primary); }
+.section__mark svg { width: 50px; height: auto; }
+.section__scrollto { height: 171px; }
+
+.section__scrollto {
+	position: relative; z-index: 3;
+	margin-top: -8px;
+	display: block;
+	color: var(--color-light);
+	font-family: var(--font-family-tertiary);
+	font-size: 1.3rem; letter-spacing: .32em; text-transform: uppercase;
+}
+.section__scrollto .icon-primary { display: block; }
+.section__scrollto svg { height: 150px; width: auto; margin-inline: auto; }
+/* the word sits on the line, a little below the diamond */
+.section__scrollto span {
+	position: absolute; left: 50%; top: 74%;
+	transform: translate(-50%, 0);
+	transition: top .4s ease, opacity .4s ease;
+	white-space: nowrap;
+}
+.section__scrollto:hover span { top: 78%; opacity: .75; }
+
+/* the media block: clip-path animates open on scroll (this is the signature move) */
+.section-hero-page-home .section__main { position: relative; margin-top: -189px; }
+.section-hero-page-home .section__media {
+	position: relative;
+	height: clamp(433px, 43vw, 620px);
+	background: var(--color-secondary);
+	/* driven by --media-progress (0 -> 1) in JS */
+	--media-progress: 0;
+	clip-path: inset(
+		0%
+		calc((35% - 35% * var(--media-progress)) + var(--media-offset) * var(--media-progress))
+		round
+		calc(288px - (288px - var(--media-rounded)) * var(--media-progress))
+	);
+}
+.section-hero-page-home .section__media img,
+.section-hero-page-home .section__media video {
+	position: absolute; inset: 0;
+	width: 100%; height: 100%; object-fit: cover;
+}
+
+/* Anchored to the bottom of the photo, not to a percentage of it. The original
+   ends the text block exactly on the photo's bottom edge at every width - a
+   percentage only happens to match at one screen size. */
+.section-hero-page-home .section__footer {
+	position: absolute; z-index: 4; left: 50%; bottom: 0;
+	transform: translateX(-50%);
+	width: min(420px, 100%); padding: 50px 0;
+	text-align: center; color: var(--color-light);
+}
+.section__footer__title {
+	font-family: var(--font-family-secondary);
+	font-size: var(--font-size-h3);
+	line-height: 1.05; text-transform: uppercase;
+}
+.section__footer__subtitle {
+	margin-top: 2rem;
+	font-family: var(--font-family-secondary);
+	font-size: var(--font-size-h5);
+	line-height: 1.35; text-transform: uppercase;
+}
+.section__icon { display: block; margin: 2rem auto 0; color: var(--color-primary); }
+.section__icon svg { height: 20px; width: auto; margin-inline: auto; }
+.section__icon [data-scrub="draw"] { }
+
+/* soft cream wash behind the hero media, as on the original */
+.section-hero-page-home::after {
+	content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0;
+	height: 55%;
+	background: linear-gradient(180deg, rgba(232,237,241,0) 0%, #f6ecd9 55%, #fff 100%);
+}
+
+/* --- about ---------------------------------------------------------------- */
+.section-custom-about { position: relative; padding: 10rem 0 12rem; }
+.section-custom-about .arabesque { --arabesque-height: 521px; --arabesque-length: 684px; }
+.section-custom-about .section__wrapper {
+	position: relative; z-index: 1;
+	display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
+}
+.section-custom-about .section__header { display: flex; align-items: center; min-height: 395px; }
+.section-custom-about .section__title { width: 100%; max-width: 500px; color: var(--color-tertiary); }
+.section-custom-about .section__title svg { width: 100%; height: auto; }
+
+.section-custom-about .section__main { display: flex; flex-direction: column; gap: 2.4rem; max-width: 540px; }
+.section-custom-about .section__main p { font-size: var(--font-size-default); line-height: 1.6; }
+.section-custom-about .section__main strong { font-weight: 600; }
+
+.rating { display: flex; align-items: center; gap: .8rem; font-size: var(--font-size-default); }
+.rating__score { font-weight: 600; }
+.rating__stars { color: #fbbc04; letter-spacing: .1em; font-size: 1.7rem; }
+.rating__g { width: 20px; height: 20px; flex: 0 0 auto; }
+.rating__count { color: #6b6b6b; font-size: var(--font-size-xs); }
+
+/* --- fixed "schedule a visit" toolbar tab --------------------------------- */
+/* below the menu overlay (55), so opening the menu covers the tab */
+.toolbar { position: fixed; z-index: 50; right: 0; top: 50%; transform: translateY(-50%); }
+.toolbar__link {
+	display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.6rem;
+	width: 65px; height: 210px;
+	background: var(--color-primary);
+	color: var(--color-light);
+	border-radius: 32px 0 0 32px;
+	transition: background .3s ease;
+}
+.toolbar__link:hover { background: var(--color-primary-light); }
+.toolbar__link span { writing-mode: vertical-rl; font-size: var(--font-size-xs); }
+.toolbar__link svg { width: 22px; height: 22px; }
+
+/* --- responsive ----------------------------------------------------------- */
+@media (max-width: 1024px) {
+	.page__header { padding-inline: 3.2rem; }
+	.section-custom-about .section__wrapper { grid-template-columns: 1fr; gap: 4rem; }
+	.section-custom-about .section__header { min-height: 0; justify-content: center; }
+	.section-custom-about .section__main { max-width: none; }
+	.arabesque__line-l2, .arabesque__line-r2 { display: none; }
+}
+
+@media (max-width: 767px) {
+	:root { --arabesque-offset: 5vw; --media-rounded: 2em; }
+	.page__header { padding-inline: 2rem; }
+	.header__logo svg, .header__logo img { width: 140px; }
+	.header__nav { gap: 1.6rem; }
+	.section__scrollto svg { height: 96px; }
+	.section__scrollto span { top: 72%; }
+	/* 18px here against 20px on desktop - measured, the type does not just scale.
+	   The 30px gap above it is the same at both widths, so it is not overridden. */
+	.section-hero-page-home .section__subtitle { font-size: 1.8rem; }
+	.section-hero-page-home .section__footer { padding: 25px 0; }
+	.section__icon svg { max-width: 100%; }
+	.toolbar__link { width: 46px; height: 150px; gap: 1rem; }
+	.toolbar__link svg { width: 18px; height: 18px; }
+	.section-custom-about { padding: 6rem 0 7rem; }
+	.arabesque__line-l4, .arabesque__line-r4,
+	.arabesque__line-l5, .arabesque__line-r5 { display: none; }
+}

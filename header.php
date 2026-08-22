@@ -1,0 +1,88 @@
+<?php
+/**
+ * Site header.
+ *
+ * Replaces Hello Elementor's header entirely: fixed bar, logo, language pair,
+ * round menu button, and the full-screen menu it opens. The bar tucks itself
+ * away while you scroll down and comes back on the way up - that behaviour
+ * lives in assets/js/main.js.
+ *
+ * @package lenfant-roi-child
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$lr_logo_id = (int) get_theme_mod( 'logo_svg_replace', 0 );
+?>
+<!doctype html>
+<html <?php language_attributes(); ?> class="no-js">
+<head>
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+<?php wp_body_open(); ?>
+
+<a class="skip-link visually-hidden" href="#content"><?php esc_html_e( 'Skip to content', 'lenfant-roi-child' ); ?></a>
+
+<header class="page__header">
+	<a class="header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
+		<?php
+		if ( $lr_logo_id ) {
+			echo wp_get_attachment_image( $lr_logo_id, 'full', false, array( 'alt' => get_bloginfo( 'name' ) ) );
+		} else {
+			lr_the_svg( 'logo' );
+		}
+		?>
+	</a>
+
+	<nav class="header__nav">
+		<?php
+		$lr_langs = array();
+		foreach ( array( 1, 2 ) as $lr_i ) {
+			$lr_label = lr_opt( 'lang_' . $lr_i . '_label' );
+			if ( $lr_label ) {
+				$lr_langs[] = array( $lr_label, lr_opt( 'lang_' . $lr_i . '_url' ) );
+			}
+		}
+
+		if ( $lr_langs ) :
+			?>
+			<div class="lang">
+				<?php foreach ( $lr_langs as $lr_index => $lr_lang ) : ?>
+					<a href="<?php echo esc_url( $lr_lang[1] ? $lr_lang[1] : '#' ); ?>"<?php echo 1 === $lr_index ? ' class="is-active"' : ''; ?>><?php echo esc_html( $lr_lang[0] ); ?></a>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+
+		<button class="burger" type="button" aria-label="<?php esc_attr_e( 'Open menu', 'lenfant-roi-child' ); ?>" aria-expanded="false" aria-controls="lr-menu">
+			<span></span><span></span><span></span>
+		</button>
+	</nav>
+</header>
+
+<div class="menu-overlay" id="lr-menu" hidden>
+	<?php
+	if ( has_nav_menu( 'lr_primary' ) ) {
+		wp_nav_menu(
+			array(
+				'theme_location' => 'lr_primary',
+				'container'      => 'nav',
+				'menu_class'     => 'menu-overlay__list',
+				'depth'          => 2,
+			)
+		);
+	} else {
+		// Nothing assigned yet - say so on screen rather than open an empty panel.
+		echo '<p class="menu-overlay__empty">'
+			. esc_html__( 'Assign a menu under Appearance > Menus to the "Main menu" location.', 'lenfant-roi-child' )
+			. '</p>';
+	}
+	?>
+</div>
+
+<main id="content">
