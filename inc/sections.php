@@ -182,14 +182,42 @@ function lr_section_hero() {
 add_shortcode( 'lr_hero', 'lr_section_hero' );
 
 /**
+ * The lettering at the left of the about section.
+ *
+ * @return string
+ */
+function lr_about_lettering() {
+	$id = (int) lr_opt( 'about_image' );
+
+	if ( $id ) {
+		return wp_get_attachment_image(
+			$id,
+			'full',
+			false,
+			array(
+				'class' => 'section__title__image',
+				'alt'   => get_bloginfo( 'name' ),
+			)
+		);
+	}
+
+	return lr_svg( 'wordmark' );
+}
+
+/**
  * Render the about section.
  *
- * Carried over from the approved demo so the homepage does not stop dead under
- * the hero. Its copy still comes from the demo, not from the client's content.
+ * The lettering and both paragraphs come from the Customizer, so the demo
+ * wording is only ever a default - editing it never touches a file.
  *
  * @return string
  */
 function lr_section_about() {
+	$paragraphs = array(
+		array( lr_opt( 'about_text_1' ), 150 ),
+		array( lr_opt( 'about_text_2' ), 250 ),
+	);
+
 	ob_start();
 	?>
 	<section class="section-custom-about" id="about">
@@ -198,24 +226,23 @@ function lr_section_about() {
 
 			<div class="section__header">
 				<h2 class="section__title" data-animation="reveal" data-delay="100">
-					<?php lr_the_svg( 'wordmark' ); ?>
+					<?php echo lr_about_lettering(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 				</h2>
 			</div>
 
 			<div class="section__main">
-				<p data-animation="reveal" data-delay="150">
-					Every child has the <strong>inner potential</strong> for remarkable growth and
-					development. By fostering their <strong>personal awakening</strong> in a
-					<strong>safe and nurturing environment</strong> that respects their individual
-					freedoms, we prepare children to become well-rounded and responsible adults.
-					The educator is a guide, supporting the child&rsquo;s journey towards
-					self-discovery and autonomous growth.
-				</p>
-				<p data-animation="reveal" data-delay="250">
-					L&rsquo;Enfant Roi provides a <strong>stimulating atmosphere</strong> for your child
-					to explore their unique sensibilities, tailored to their individual characteristics
-					and both their psychological and physical needs.
-				</p>
+				<?php foreach ( $paragraphs as $paragraph ) : ?>
+					<?php
+					list( $copy, $delay ) = $paragraph;
+					if ( '' === trim( wp_strip_all_tags( (string) $copy ) ) ) {
+						// An emptied field should remove the paragraph, not leave a gap.
+						continue;
+					}
+					?>
+					<p data-animation="reveal" data-delay="<?php echo esc_attr( $delay ); ?>">
+						<?php echo wp_kses_post( $copy ); ?>
+					</p>
+				<?php endforeach; ?>
 			</div>
 
 		</div>

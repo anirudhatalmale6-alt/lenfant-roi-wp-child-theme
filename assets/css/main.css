@@ -361,7 +361,8 @@ body.menu-is-open { overflow: hidden; }
 }
 .section-custom-about .section__header { display: flex; align-items: center; min-height: 395px; }
 .section-custom-about .section__title { width: 100%; max-width: 500px; color: var(--color-tertiary); }
-.section-custom-about .section__title svg { width: 100%; height: auto; }
+.section-custom-about .section__title svg,
+.section-custom-about .section__title__image { width: 100%; height: auto; }
 
 .section-custom-about .section__main { display: flex; flex-direction: column; gap: 2.4rem; max-width: 540px; }
 .section-custom-about .section__main p { font-size: var(--font-size-default); line-height: 1.6; }

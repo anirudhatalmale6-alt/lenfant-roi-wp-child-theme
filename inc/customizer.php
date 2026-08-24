@@ -39,6 +39,11 @@ function lr_defaults() {
 		'hero_footer_title'    => "Berceau de l'excellence",
 		'hero_footer_subtitle' => 'For 20 years',
 
+		// About.
+		'about_image'          => '',
+		'about_text_1'         => 'Every child has the <strong>inner potential</strong> for remarkable growth and development. By fostering their <strong>personal awakening</strong> in a <strong>safe and nurturing environment</strong> that respects their individual freedoms, we prepare children to become well-rounded and responsible adults. The educator is a guide, supporting the child&rsquo;s journey towards self-discovery and autonomous growth.',
+		'about_text_2'         => 'L&rsquo;Enfant Roi provides a <strong>stimulating atmosphere</strong> for your child to explore their unique sensibilities, tailored to their individual characteristics and both their psychological and physical needs.',
+
 		// Visit tab.
 		'toolbar_show'         => true,
 		'toolbar_label'        => 'Schedule a visit',
@@ -262,6 +267,47 @@ function lr_customize_register( $wp_customize ) {
 	$text( 'hero_scroll_label', 'lr_hero', __( 'Scroll label', 'lenfant-roi-child' ) );
 	$text( 'hero_footer_title', 'lr_hero', __( 'Line over the photo', 'lenfant-roi-child' ) );
 	$text( 'hero_footer_subtitle', 'lr_hero', __( 'Second line over the photo', 'lenfant-roi-child' ) );
+
+	/* --- about ------------------------------------------------------------ */
+	$wp_customize->add_section(
+		'lr_about',
+		array(
+			'title'       => __( 'About section', 'lenfant-roi-child' ),
+			'description' => __( 'The lettering and the two paragraphs under the hero.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'about_image',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'absint',
+		)
+	);
+	$wp_customize->add_control(
+		new WP_Customize_Media_Control(
+			$wp_customize,
+			'about_image',
+			array(
+				'label'       => __( 'Lettering on the left', 'lenfant-roi-child' ),
+				'description' => __( 'Usually the logo. Leave empty to keep the placeholder lettering.', 'lenfant-roi-child' ),
+				'section'     => 'lr_about',
+				'mime_type'   => 'image',
+			)
+		)
+	);
+
+	$text(
+		'about_text_1',
+		'lr_about',
+		__( 'First paragraph', 'lenfant-roi-child' ),
+		'textarea',
+		// Escaped on purpose - the description is printed as HTML, so real tags
+		// here would render as bold text instead of showing him what to type.
+		__( 'Wrap words in &lt;strong&gt; ... &lt;/strong&gt; to make them bold.', 'lenfant-roi-child' )
+	);
+	$text( 'about_text_2', 'lr_about', __( 'Second paragraph', 'lenfant-roi-child' ), 'textarea' );
 
 	/* --- visit tab -------------------------------------------------------- */
 	$wp_customize->add_section(
