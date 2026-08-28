@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LR_VERSION', '1.2.0' );
+define( 'LR_VERSION', '1.3.0' );
 
 require_once get_stylesheet_directory() . '/inc/svg.php';
 require_once get_stylesheet_directory() . '/inc/customizer.php';
@@ -43,7 +43,7 @@ function lr_enqueue() {
 	// for Caslon CP and Din Medium, which are licensed and cannot be copied.
 	wp_enqueue_style(
 		'lr-fonts',
-		'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Libre+Caslon+Display&family=Archivo:wght@400;500&display=swap',
+		'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Libre+Caslon+Display&family=Archivo:wght@400;500&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap',
 		array(),
 		null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google serves its own cache key.
 	);
@@ -54,6 +54,22 @@ function lr_enqueue() {
 		array( 'lr-fonts' ),
 		LR_VERSION
 	);
+
+	// The client's own stylesheet. Loaded last so it wins, and deploy.py never
+	// overwrites it - see the header comment in the file itself.
+	//
+	// Versioned by its own mtime rather than LR_VERSION: he edits this file, and
+	// a theme-wide constant would leave his change sitting behind a stale cache
+	// until I happened to ship a release.
+	$custom = get_stylesheet_directory() . '/assets/css/custom.css';
+	if ( file_exists( $custom ) ) {
+		wp_enqueue_style(
+			'lr-custom',
+			get_stylesheet_directory_uri() . '/assets/css/custom.css',
+			array( 'lr-main' ),
+			(string) filemtime( $custom )
+		);
+	}
 
 	wp_enqueue_script(
 		'lr-main',

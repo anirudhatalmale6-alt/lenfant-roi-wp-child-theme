@@ -1,0 +1,28 @@
+/* ---------------------------------------------------------------------------
+   YOUR stylesheet. Edit this file freely.
+
+   This is the one file in the theme my deploys never overwrite - when I push an
+   update, everything else is replaced but this is left exactly as you left it.
+   Put all your own CSS here rather than in main.css.
+
+   It loads AFTER main.css, so anything you write here wins without needing
+   !important.
+   --------------------------------------------------------------------------- */
+
+/* Crown mark above the title, bigger than the original. */
+.section__mark svg { width: 100px; }
+
+/* Hero caption spans the full width instead of being capped at 420px. */
+.section-hero-page-home .section__footer { width: 100%; }
+
+/* Hero caption in Playfair Display.
+   Note: font-weight has no unit - "900px" is invalid and the browser throws the
+   whole line away, which is why this looked like it was doing nothing before.
+   Playfair is now loaded by the theme, so the name actually resolves. */
+.section__footer__title {
+	font-family: 'Playfair Display', serif;
+	font-weight: 900;
+}
+
+/* Darken the hero photo slightly so the caption stays readable over it. */
+.section-hero-page-home .section__media :is(img, video) { opacity: .77; }
