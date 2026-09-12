@@ -246,8 +246,183 @@ function lr_section_about() {
 			</div>
 
 		</div>
+
+		<?php // Brief p3: two teal curves sweeping up out of the bottom corners. ?>
+		<div class="about__curves" aria-hidden="true">
+			<span class="about__curve about__curve--left"></span>
+			<span class="about__curve about__curve--right"></span>
+		</div>
 	</section>
 	<?php
 	return ob_get_clean();
+}
+
+/**
+ * Brief p4 - the Montessori quote, full-bleed teal.
+ *
+ * @return string
+ */
+function lr_section_quote() {
+	$quote  = lr_opt( 'quote_text' );
+	$author = lr_opt( 'quote_author' );
+
+	if ( '' === trim( wp_strip_all_tags( (string) $quote ) ) ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<section class="section-quote" id="citation">
+		<div class="section__wrapper container">
+			<blockquote class="section-quote__text" data-animation="reveal" data-delay="100">
+				<?php echo wp_kses_post( $quote ); ?>
+			</blockquote>
+			<?php if ( '' !== trim( wp_strip_all_tags( (string) $author ) ) ) : ?>
+				<p class="section-quote__author" data-animation="reveal" data-delay="250">
+					<?php echo wp_kses_post( $author ); ?>
+				</p>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * The repeating teal band - brief pages 7, 8, 9, and later 11-14.
+ *
+ * Every one of those slides is this same shape: a teal panel bleeding off one
+ * edge and rounded on the other, a small gold eyebrow, an outline icon, a white
+ * heading, then body copy under the band closed off by a gold rule. Only the
+ * side and the wording change, so it is built once and called with arguments.
+ *
+ * @param array $args {
+ *     @type string $id      Section id / anchor.
+ *     @type string $side    'left' (bleeds left, rounded right) or 'right'.
+ *     @type string $label   Small gold eyebrow.
+ *     @type string $icon    Filename in assets/img, or '' for none.
+ *     @type string $heading White heading inside the band.
+ *     @type string $value   Optional larger line under the heading.
+ *     @type string $copy    Body copy below the band.
+ * }
+ * @return string
+ */
+function lr_section_band( $args ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'id'      => '',
+			'side'    => 'left',
+			'label'   => '',
+			'icon'    => '',
+			'heading' => '',
+			'value'   => '',
+			'copy'    => '',
+		)
+	);
+
+	// A band with neither heading nor copy is an empty teal slab - drop it.
+	if ( '' === trim( wp_strip_all_tags( $a['heading'] . $a['copy'] ) ) ) {
+		return '';
+	}
+
+	$side = ( 'right' === $a['side'] ) ? 'right' : 'left';
+
+	ob_start();
+	?>
+	<section class="section-band section-band--<?php echo esc_attr( $side ); ?>"
+		<?php echo $a['id'] ? ' id="' . esc_attr( $a['id'] ) . '"' : ''; ?>>
+
+		<div class="section-band__panel" data-animation="reveal" data-delay="100">
+			<div class="section-band__inner container">
+
+				<div class="section-band__aside">
+					<?php if ( '' !== $a['label'] ) : ?>
+						<p class="section-band__label"><?php echo wp_kses_post( $a['label'] ); ?></p>
+					<?php endif; ?>
+					<?php if ( '' !== $a['icon'] ) : ?>
+						<img class="section-band__icon" alt=""
+							src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/' . $a['icon'] ); ?>">
+					<?php endif; ?>
+				</div>
+
+				<div class="section-band__main">
+					<?php if ( '' !== $a['heading'] ) : ?>
+						<h2 class="section-band__heading"><?php echo wp_kses_post( $a['heading'] ); ?></h2>
+					<?php endif; ?>
+					<?php if ( '' !== $a['value'] ) : ?>
+						<p class="section-band__value"><?php echo wp_kses_post( $a['value'] ); ?></p>
+					<?php endif; ?>
+				</div>
+
+			</div>
+		</div>
+
+		<?php if ( '' !== trim( wp_strip_all_tags( $a['copy'] ) ) ) : ?>
+			<div class="section-band__below container">
+				<div class="section-band__copy" data-animation="reveal" data-delay="200">
+					<?php echo wpautop( wp_kses_post( $a['copy'] ) ); ?>
+				</div>
+				<span class="section-band__rule" aria-hidden="true"></span>
+			</div>
+		<?php endif; ?>
+	</section>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Brief p7 - opening hours.
+ *
+ * @return string
+ */
+function lr_section_hours() {
+	return lr_section_band(
+		array(
+			'id'      => 'horaires',
+			'side'    => 'left',
+			'label'   => lr_opt( 'hours_label' ),
+			'icon'    => 'icon-clock.png',
+			'heading' => lr_opt( 'hours_heading' ),
+			'value'   => lr_opt( 'hours_value' ),
+			'copy'    => lr_opt( 'hours_copy' ),
+		)
+	);
+}
+
+/**
+ * Brief p8 - closures. The only one that bleeds off the right edge.
+ *
+ * @return string
+ */
+function lr_section_holidays() {
+	return lr_section_band(
+		array(
+			'id'      => 'vacances',
+			'side'    => 'right',
+			'label'   => lr_opt( 'holidays_label' ),
+			'icon'    => 'icon-calendar.png',
+			'heading' => lr_opt( 'holidays_heading' ),
+			'copy'    => lr_opt( 'holidays_copy' ),
+		)
+	);
+}
+
+/**
+ * Brief p9 - flexible drop-off and pick-up.
+ *
+ * @return string
+ */
+function lr_section_flex() {
+	return lr_section_band(
+		array(
+			'id'      => 'flexibilite',
+			'side'    => 'left',
+			'label'   => lr_opt( 'flex_label' ),
+			'icon'    => 'icon-handshake.png',
+			'heading' => lr_opt( 'flex_heading' ),
+			'copy'    => lr_opt( 'flex_copy' ),
+		)
+	);
 }
 add_shortcode( 'lr_about', 'lr_section_about' );

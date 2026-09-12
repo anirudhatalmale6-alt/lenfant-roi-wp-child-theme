@@ -26,8 +26,13 @@ if ( $lr_has_own_build ) {
 		the_content();
 	}
 } else {
-	echo lr_section_hero();  // phpcs:ignore WordPress.Security.EscapingOutput
-	echo lr_section_about(); // phpcs:ignore WordPress.Security.EscapingOutput
+	// Brief order: hero, about, quote, then the three bands.
+	echo lr_section_hero();     // phpcs:ignore WordPress.Security.EscapingOutput
+	echo lr_section_about();    // phpcs:ignore WordPress.Security.EscapingOutput
+	echo lr_section_quote();    // phpcs:ignore WordPress.Security.EscapingOutput
+	echo lr_section_hours();    // phpcs:ignore WordPress.Security.EscapingOutput
+	echo lr_section_holidays(); // phpcs:ignore WordPress.Security.EscapingOutput
+	echo lr_section_flex();     // phpcs:ignore WordPress.Security.EscapingOutput
 }
 
 get_footer();

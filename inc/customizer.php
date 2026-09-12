@@ -45,12 +45,39 @@ function lr_defaults() {
 		'about_text_2'         => 'L&rsquo;Enfant Roi provides a <strong>stimulating atmosphere</strong> for your child to explore their unique sensibilities, tailored to their individual characteristics and both their psychological and physical needs.',
 
 		// Visit tab.
+		// Quote (brief p4). Wording is the client's own, kept verbatim.
+		'quote_text'           => '&laquo;&nbsp;L&rsquo;enfant n&rsquo;est pas un vase que l&rsquo;on remplit, mais une source que l&rsquo;on laisse jaillir.&nbsp;&raquo;',
+		'quote_author'         => 'Maria Montessori',
+
+		// Hours (brief p7).
+		'hours_label'          => 'Horaires',
+		'hours_heading'        => 'Du lundi au vendredi',
+		'hours_value'          => '7:00-19:00',
+		'hours_copy'           => 'Ouverte de 7h &agrave; 19h, SmileyWorld s&rsquo;adapte aux besoins de chaque famille et aux diff&eacute;rents rythmes de travail. Des horaires pens&eacute;s pour vous offrir plus de flexibilit&eacute; au quotidien, avec la tranquillit&eacute; de pouvoir toujours compter sur nous.',
+
+		// Closures (brief p8).
+		'holidays_label'       => 'Vacances',
+		'holidays_heading'     => 'Seulement 3 semaines de fermeture par an',
+		'holidays_copy'        => 'La cr&egrave;che ferme les deux premi&egrave;res semaines du mois d&rsquo;ao&ucirc;t, ainsi qu&rsquo;une semaine entre No&euml;l et le Nouvel An, non factur&eacute;es.
+
+Notre calendrier est pens&eacute; pour s&rsquo;adapter au mieux au rythme et au quotidien de chaque famille.',
+
+		// Flexibility (brief p9).
+		'flex_label'           => 'Flexibilit&eacute;',
+		'flex_heading'         => 'Une arriv&eacute;e et un d&eacute;part serein',
+		'flex_copy'            => 'Nous n&rsquo;imposons aucun horaire fixe d&rsquo;arriv&eacute;e ou de d&eacute;part&nbsp;: vous organisez les journ&eacute;es de votre enfant en toute libert&eacute;.
+
+Gr&acirc;ce &agrave; nos formules flexibles &agrave; la journ&eacute;e ou &agrave; la demi-journ&eacute;e.',
+
 		'toolbar_show'         => true,
 		'toolbar_label'        => 'Schedule a visit',
 		'toolbar_url'          => '#',
 
 		// Palette.
-		'color_primary'        => '#d7a33d',
+		// Must stay in step with main.css :root - lr_palette_css() prints nothing
+		// when a setting equals its default, so a mismatch here would quietly
+		// offer the old Lenfant-Roi gold as "Default" in the colour picker.
+		'color_primary'        => '#c39a5b',
 		'color_secondary'      => '#02162a',
 		'color_tertiary'       => '#1d1d1b',
 	);
@@ -308,6 +335,61 @@ function lr_customize_register( $wp_customize ) {
 		__( 'Wrap words in &lt;strong&gt; ... &lt;/strong&gt; to make them bold.', 'lenfant-roi-child' )
 	);
 	$text( 'about_text_2', 'lr_about', __( 'Second paragraph', 'lenfant-roi-child' ), 'textarea' );
+
+	/* --- quote (brief p4) ------------------------------------------------- */
+	$wp_customize->add_section(
+		'lr_quote',
+		array(
+			'title'       => __( 'Quote', 'lenfant-roi-child' ),
+			'description' => __( 'The teal band with the Montessori quotation. Clear the quote to remove the whole section.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+	$text( 'quote_text', 'lr_quote', __( 'Quotation', 'lenfant-roi-child' ), 'textarea' );
+	$text( 'quote_author', 'lr_quote', __( 'Attributed to', 'lenfant-roi-child' ) );
+
+	/* --- the three bands (brief p7, p8, p9) ------------------------------- */
+	$bands = array(
+		'lr_hours'    => array(
+			'title'  => __( 'Opening hours', 'lenfant-roi-child' ),
+			'prefix' => 'hours',
+			'value'  => __( 'Large line (the times)', 'lenfant-roi-child' ),
+		),
+		'lr_holidays' => array(
+			'title'  => __( 'Closures', 'lenfant-roi-child' ),
+			'prefix' => 'holidays',
+		),
+		'lr_flex'     => array(
+			'title'  => __( 'Flexibility', 'lenfant-roi-child' ),
+			'prefix' => 'flex',
+		),
+	);
+
+	foreach ( $bands as $section_id => $band ) {
+		$wp_customize->add_section(
+			$section_id,
+			array(
+				'title'       => $band['title'],
+				'description' => __( 'Clearing both the heading and the text removes this section from the page.', 'lenfant-roi-child' ),
+				'panel'       => 'lr_home',
+			)
+		);
+
+		$text( $band['prefix'] . '_label', $section_id, __( 'Small gold label', 'lenfant-roi-child' ) );
+		$text( $band['prefix'] . '_heading', $section_id, __( 'Heading', 'lenfant-roi-child' ), 'textarea' );
+
+		if ( isset( $band['value'] ) ) {
+			$text( $band['prefix'] . '_value', $section_id, $band['value'] );
+		}
+
+		$text(
+			$band['prefix'] . '_copy',
+			$section_id,
+			__( 'Text below the band', 'lenfant-roi-child' ),
+			'textarea',
+			__( 'Leave a blank line between paragraphs.', 'lenfant-roi-child' )
+		);
+	}
 
 	/* --- visit tab -------------------------------------------------------- */
 	$wp_customize->add_section(
