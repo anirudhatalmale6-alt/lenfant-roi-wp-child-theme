@@ -402,25 +402,36 @@ body.menu-is-open { overflow: hidden; }
    tapers to nothing towards the middle, so it is a box with a single rounded
    corner on the inner side - a centred ellipse gives two humps with a notch
    between them instead of the sweep. */
-.section-custom-about { position: relative; overflow: hidden; }
+/* NB: no overflow:hidden on the section. Four of the nine arabesque lines are
+   meant to spill past its edges - the original does the same - and hiding
+   overflow here silently clipped them. The curves are already fully inside
+   their own wrapper, so nothing needed clipping in the first place. */
 .about__curves {
 	position: absolute; inset-inline: 0; bottom: 0;
 	height: clamp(90px, 13vw, 175px);
 	pointer-events: none;
 }
+/* The shape is the ORIGINAL SITE's own, not an invention: its .section__background
+   is `border-radius: 144px 144px 0 0`, and the hero media rounds to 288px. Two
+   corner sweeps read as a wave and belong to no part of that vocabulary. */
 .about__curve {
 	position: absolute; bottom: 0; height: 100%;
-	width: 47%;
+	left: 0; right: 0;
 	background: var(--color-brand);
+	border-radius: 144px 144px 0 0;
 }
-.about__curve--left  { left: 0;  border-radius: 0 100% 0 0; }
-.about__curve--right { right: 0; border-radius: 100% 0 0 0; }
+.about__curve--right { display: none; }
 
 /* --- p4: the quotation ---------------------------------------------------- */
 .section-quote {
+	position: relative;
 	background: var(--color-brand);
 	padding: clamp(7rem, 11vw, 14rem) 0;
 }
+/* Gold at .66 disappears into the teal, so the lines go white here and the
+   block sets its own height for them. */
+.section-quote .arabesque { --arabesque-height: 560px; }
+.section-quote .arabesque__line { background: var(--color-light); opacity: .28; }
 .section-quote__text {
 	margin: 0;
 	max-width: 20ch;
@@ -438,6 +449,7 @@ body.menu-is-open { overflow: hidden; }
 
 /* --- p7/p8/p9: the repeating band ----------------------------------------- */
 .section-band { position: relative; padding-block: clamp(4rem, 7vw, 9rem) 0; }
+.section-band .arabesque { --arabesque-height: 440px; }
 
 /* The panel bleeds off one edge and is rounded on the other. 100vw keeps the
    bleed correct regardless of where the container's gutter falls. */

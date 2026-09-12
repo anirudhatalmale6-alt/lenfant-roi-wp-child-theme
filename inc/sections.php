@@ -273,6 +273,7 @@ function lr_section_quote() {
 	ob_start();
 	?>
 	<section class="section-quote" id="citation">
+		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 		<div class="section__wrapper container">
 			<blockquote class="section-quote__text" data-animation="reveal" data-delay="100">
 				<?php echo wp_kses_post( $quote ); ?>
@@ -332,6 +333,8 @@ function lr_section_band( $args ) {
 	?>
 	<section class="section-band section-band--<?php echo esc_attr( $side ); ?>"
 		<?php echo $a['id'] ? ' id="' . esc_attr( $a['id'] ) . '"' : ''; ?>>
+
+		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
 		<div class="section-band__panel" data-animation="reveal" data-delay="100">
 			<div class="section-band__inner container">
