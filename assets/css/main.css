@@ -402,25 +402,30 @@ body.menu-is-open { overflow: hidden; }
    tapers to nothing towards the middle, so it is a box with a single rounded
    corner on the inner side - a centred ellipse gives two humps with a notch
    between them instead of the sweep. */
-/* NB: no overflow:hidden on the section. Four of the nine arabesque lines are
-   meant to spill past its edges - the original does the same - and hiding
-   overflow here silently clipped them. The curves are already fully inside
-   their own wrapper, so nothing needed clipping in the first place. */
-.about__curves {
-	position: absolute; inset-inline: 0; bottom: 0;
-	height: clamp(90px, 13vw, 175px);
+/* This is the original's own construction, read straight off its computed
+   styles rather than eyeballed. The section carries TWO layers:
+     ::before  the dark colour, filling the whole block
+     ::after   white, border-radius 0 0 1024px 1024px
+   The white sheet's rounded BOTTOM corners are the curve - it dips lowest in
+   the middle and lets the colour show through at the bottom corners. Trying to
+   draw it as separate corner shapes leaves a notch where they meet, and as a
+   rounded-top panel it curves the wrong way; it is one sheet, not two pieces.
+   1024px is their number. It exceeds the half-width, so the browser scales
+   both radii by the same factor - which is exactly what makes the arc so wide.
+   Navy on the original; here the brand teal, so it runs into the quote below.
+   NB: no overflow:hidden on the section - four of the nine arabesque lines are
+   meant to spill past its edges, and hiding overflow silently clipped them. */
+.section-custom-about { isolation: isolate; }
+.section-custom-about::before,
+.section-custom-about::after {
+	content: ''; position: absolute; inset: -1px; z-index: -1;
 	pointer-events: none;
 }
-/* The shape is the ORIGINAL SITE's own, not an invention: its .section__background
-   is `border-radius: 144px 144px 0 0`, and the hero media rounds to 288px. Two
-   corner sweeps read as a wave and belong to no part of that vocabulary. */
-.about__curve {
-	position: absolute; bottom: 0; height: 100%;
-	left: 0; right: 0;
-	background: var(--color-brand);
-	border-radius: 144px 144px 0 0;
+.section-custom-about::before { background: var(--color-brand); }
+.section-custom-about::after {
+	background: var(--color-light);
+	border-radius: 0 0 1024px 1024px;
 }
-.about__curve--right { display: none; }
 
 /* --- p4: the quotation ---------------------------------------------------- */
 .section-quote {
@@ -566,5 +571,5 @@ body.menu-is-open { overflow: hidden; }
 	.section-band__aside { width: auto; }
 	.section-band__icon { width: 62px; }
 	.section-band--right .section-band__copy { margin-left: 0; }
-	.about__curves { height: 70px; }
+	.section-custom-about::after { border-radius: 0 0 420px 420px; }
 }

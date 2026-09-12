@@ -247,11 +247,6 @@ function lr_section_about() {
 
 		</div>
 
-		<?php // Brief p3: two teal curves sweeping up out of the bottom corners. ?>
-		<div class="about__curves" aria-hidden="true">
-			<span class="about__curve about__curve--left"></span>
-			<span class="about__curve about__curve--right"></span>
-		</div>
 	</section>
 	<?php
 	return ob_get_clean();
