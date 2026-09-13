@@ -353,40 +353,44 @@ function lr_section_band( $args ) {
 
 		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
-		<div class="section-band__panel" data-draw data-animation="reveal" data-delay="100">
+		<?php
+		// The outline bleeds off one edge, so only half the stadium is on screen -
+		// that is the "half oval" on the original. Everything else sits inside it.
+		?>
+		<div class="section-band__stage" data-draw>
 			<?php echo lr_outline(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
+
 			<div class="section-band__inner container">
 
-				<div class="section-band__aside">
-					<?php if ( '' !== $a['label'] ) : ?>
-						<p class="section-band__label"><?php echo wp_kses_post( $a['label'] ); ?></p>
-					<?php endif; ?>
-					<?php if ( '' !== $a['icon'] ) : ?>
-						<img class="section-band__icon" alt=""
-							src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/' . $a['icon'] ); ?>">
-					<?php endif; ?>
+				<div class="section-band__head">
+					<div class="section-band__aside">
+						<?php if ( '' !== $a['label'] ) : ?>
+							<p class="section-band__label" data-animation="reveal" data-delay="100"><?php echo wp_kses_post( $a['label'] ); ?></p>
+						<?php endif; ?>
+						<?php if ( '' !== $a['icon'] ) : ?>
+							<img class="section-band__icon" alt="" data-animation="reveal" data-delay="150"
+								src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/' . $a['icon'] ); ?>">
+						<?php endif; ?>
+					</div>
+
+					<div class="section-band__main">
+						<?php if ( '' !== $a['heading'] ) : ?>
+							<h2 class="section-band__heading" data-animation="reveal" data-delay="150"><?php echo wp_kses_post( $a['heading'] ); ?></h2>
+						<?php endif; ?>
+						<?php if ( '' !== $a['value'] ) : ?>
+							<p class="section-band__value" data-animation="reveal" data-delay="200"><?php echo wp_kses_post( $a['value'] ); ?></p>
+						<?php endif; ?>
+					</div>
 				</div>
 
-				<div class="section-band__main">
-					<?php if ( '' !== $a['heading'] ) : ?>
-						<h2 class="section-band__heading"><?php echo wp_kses_post( $a['heading'] ); ?></h2>
-					<?php endif; ?>
-					<?php if ( '' !== $a['value'] ) : ?>
-						<p class="section-band__value"><?php echo wp_kses_post( $a['value'] ); ?></p>
-					<?php endif; ?>
-				</div>
+				<?php if ( '' !== trim( wp_strip_all_tags( $a['copy'] ) ) ) : ?>
+					<div class="section-band__copy" data-animation="reveal" data-delay="250">
+						<?php echo wpautop( wp_kses_post( $a['copy'] ) ); ?>
+					</div>
+				<?php endif; ?>
 
 			</div>
 		</div>
-
-		<?php if ( '' !== trim( wp_strip_all_tags( $a['copy'] ) ) ) : ?>
-			<div class="section-band__below container">
-				<div class="section-band__copy" data-animation="reveal" data-delay="200">
-					<?php echo wpautop( wp_kses_post( $a['copy'] ) ); ?>
-				</div>
-				<span class="section-band__rule" aria-hidden="true"></span>
-			</div>
-		<?php endif; ?>
 	</section>
 	<?php
 	return ob_get_clean();

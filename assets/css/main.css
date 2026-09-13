@@ -453,80 +453,73 @@ body.menu-is-open { overflow: hidden; }
 }
 
 /* --- p7/p8/p9: the repeating band ----------------------------------------- */
-.section-band { position: relative; padding-block: clamp(4rem, 7vw, 9rem) 0; }
+/* Rebuilt to the original's CSR block, measured off it: the WHOLE section is
+   the dark colour, the gold stadium bleeds 424px off one edge of a 1280
+   viewport (so only half of it is on screen - the "half oval"), and every bit
+   of content sits inside that outline in white. Earlier this was a teal pill
+   on a white page with the copy underneath; that was the deck's arrangement,
+   not the site's, and the client asked for the site's. */
+.section-band {
+	position: relative;
+	background: var(--color-brand);
+	color: var(--color-light);
+	padding-block: clamp(5rem, 8vw, 10rem);
+}
+/* Gold at .66 vanishes into the teal - on their navy block the guide lines are
+   pale too. */
 .section-band .arabesque { --arabesque-height: 440px; }
+.section-band .arabesque__line { background: var(--color-light); opacity: .22; }
+
+.section-band__stage { position: relative; }
 
 /* --- the drawn stadium outline -------------------------------------------- */
-/* Sits over the panel and extends past it, so the gold line reads as a loop
-   AROUND the block rather than a border on it - that is how the original's
-   CSR block is put together. Stroke colour comes from `color` via
-   currentColor, so one CSS property retints it. */
+/* Stroke colour comes from `color` via currentColor, so one property retints it. */
 .outline {
 	position: absolute; z-index: 2;
-	inset: -18px -22px;
 	color: var(--color-primary);
 	pointer-events: none;
 }
 .outline__svg { width: 100%; height: 100%; overflow: visible; }
 .outline__shape {
-	/* vector-effect keeps the hairline 1px however hard the viewBox is
-	   stretched - without it, preserveAspectRatio="none" would smear the
-	   stroke thicker on one axis than the other. */
+	/* Keeps the hairline 1px however hard preserveAspectRatio="none" stretches
+	   the viewBox - without it the stroke smears thicker on one axis. */
 	vector-effect: non-scaling-stroke;
 	stroke-width: 1;
-	/* Start undrawn. JS replaces this with the scrubbed split on first frame,
-	   so a no-JS visitor simply never sees the line rather than seeing it
-	   stuck at zero length. */
+	/* Undrawn until JS scrubs it, so a no-JS visitor never sees it stuck. */
 	stroke-dasharray: 0 100000;
 }
 .no-js .outline__shape { stroke-dasharray: none; }
 
-/* The panel bleeds off one edge and is rounded on the other. 100vw keeps the
-   bleed correct regardless of where the container's gutter falls. */
-.section-band__panel {
-	position: relative;
-	width: min(82%, 1100px);
-	background: var(--color-brand);
-	padding-block: clamp(2.6rem, 3.4vw, 4.2rem);
-	color: var(--color-light);
-}
-.section-band--left .section-band__panel {
-	margin-right: auto;
-	border-radius: 0 999px 999px 0;
-	padding-right: clamp(4rem, 6vw, 9rem);
-}
-.section-band--right .section-band__panel {
-	margin-left: auto;
-	border-radius: 999px 0 0 999px;
-	padding-left: clamp(4rem, 6vw, 9rem);
-}
+/* -424/1280 = -33%. Mirrored for the block that bleeds off the right. */
+.section-band--left  .outline { inset: -1px -1px -1px -33%; }
+.section-band--right .outline { inset: -1px -33% -1px -1px; }
 
 .section-band__inner {
-	display: flex; align-items: center; gap: clamp(2rem, 4vw, 5rem);
+	position: relative; z-index: 3;
 	max-width: var(--container);
+	padding-block: clamp(2rem, 3vw, 3.5rem);
 }
-/* Reversed so the label and icon sit on the closed side, as on slide 8. The
-   extra gutter keeps them clear of the fixed "Schedule a visit" tab, which
-   floats over the right edge and was landing on top of the icon. */
+/* The right-hand block mirrors, and keeps clear of the fixed "Schedule a visit"
+   tab that floats over the right edge. */
 .section-band--right .section-band__inner {
-	flex-direction: row-reverse;
+	text-align: right;
 	padding-right: clamp(56px, 7vw, 96px);
 }
 
-.section-band__aside {
-	flex: 0 0 auto; width: clamp(90px, 12vw, 150px);
-	text-align: center;
+.section-band__head {
+	display: flex; align-items: center; gap: clamp(2rem, 4vw, 5rem);
 }
+.section-band--right .section-band__head { flex-direction: row-reverse; }
+
+.section-band__aside { flex: 0 0 auto; width: clamp(90px, 12vw, 150px); text-align: center; }
 .section-band__label {
 	font-weight: 600;
 	font-size: clamp(1.6rem, 1.8vw, 2.1rem);
 	color: var(--color-primary);
 }
-.section-band__icon {
-	width: clamp(56px, 7vw, 92px); height: auto;
-	margin: .8rem auto 0;
-}
-.section-band__main { flex: 1 1 auto; text-align: center; }
+.section-band__icon { width: clamp(56px, 7vw, 92px); height: auto; margin: .8rem auto 0; }
+
+.section-band__main { flex: 1 1 auto; }
 .section-band__heading {
 	font-weight: 600;
 	font-size: clamp(1.9rem, 2.4vw, 3rem);
@@ -539,21 +532,14 @@ body.menu-is-open { overflow: hidden; }
 	line-height: 1.15;
 }
 
-/* Copy sits under the band, closed off by the thin gold rule from the slides. */
-.section-band__below { padding-top: clamp(2.6rem, 4vw, 4.5rem); }
+/* Inside the outline now, not in a white strip below it. */
 .section-band__copy {
+	margin-top: clamp(2rem, 3vw, 3.2rem);
 	max-width: 62ch;
-	font-weight: 600;
 	line-height: 1.75;
 }
 .section-band--right .section-band__copy { margin-left: auto; }
 .section-band__copy p + p { margin-top: 1.4rem; }
-.section-band__rule {
-	display: block; height: 1px;
-	margin-top: clamp(2.2rem, 3.5vw, 4rem);
-	background: var(--color-primary);
-	opacity: .85;
-}
 
 /* --- responsive ----------------------------------------------------------- */
 @media (max-width: 1024px) {
@@ -584,17 +570,16 @@ body.menu-is-open { overflow: hidden; }
 
 	/* The band is a wide shape. On a phone the pill end and the side-by-side
 	   icon both stop working, so it goes full width and stacks. */
-	.section-band__panel {
-		width: 100%;
-		border-radius: 0 !important;
-		padding-inline: 0 !important;
-	}
-	.section-band__inner,
-	.section-band--right .section-band__inner {
+	/* The stadium is a wide shape; on a phone it stops reading as one, so the
+	   outline goes and the block stacks. */
+	.section-band .outline { display: none; }
+	.section-band__head,
+	.section-band--right .section-band__head {
 		flex-direction: column; text-align: center; gap: 1.4rem;
 	}
 	.section-band__aside { width: auto; }
 	.section-band__icon { width: 62px; }
+	.section-band--right .section-band__inner { text-align: center; padding-right: 0; }
 	.section-band--right .section-band__copy { margin-left: 0; }
 	.section-custom-about::after { border-radius: 0 0 420px 420px; }
 }
