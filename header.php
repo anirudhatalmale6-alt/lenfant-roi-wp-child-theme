@@ -65,24 +65,57 @@ $lr_logo_id = (int) get_theme_mod( 'logo_svg_replace', 0 );
 	</nav>
 </header>
 
-<div class="menu-overlay" id="lr-menu" hidden>
-	<?php
-	if ( has_nav_menu( 'lr_primary' ) ) {
-		wp_nav_menu(
-			array(
-				'theme_location' => 'lr_primary',
-				'container'      => 'nav',
-				'menu_class'     => 'menu-overlay__list',
-				'depth'          => 2,
-			)
+<?php
+// The original is a white panel down the right-hand side with the rest of the
+// page dimmed behind it - not a full-screen overlay. 600px of a 1280 viewport.
+?>
+<div class="menu-scrim" id="lr-menu-scrim" hidden></div>
+
+<div class="menu-panel" id="lr-menu" hidden>
+	<div class="menu-panel__inner">
+		<?php
+		if ( has_nav_menu( 'lr_primary' ) ) {
+			wp_nav_menu(
+				array(
+					'theme_location' => 'lr_primary',
+					'container'      => 'nav',
+					'menu_class'     => 'menu-panel__list',
+					'depth'          => 2,
+				)
+			);
+		} else {
+			// Nothing assigned yet - say so on screen rather than open an empty panel.
+			echo '<p class="menu-panel__empty">'
+				. esc_html__( 'Assign a menu under Appearance > Menus to the "Main menu" location.', 'lenfant-roi-child' )
+				. '</p>';
+		}
+
+		// The three pill buttons under the links. Each one disappears if its
+		// label is cleared, rather than rendering an empty pill.
+		$lr_buttons = array(
+			array( 'menu_btn_1_label', 'menu_btn_1_url', 'is-dark' ),
+			array( 'menu_btn_2_label', 'menu_btn_2_url', 'is-outline' ),
+			array( 'menu_btn_3_label', 'menu_btn_3_url', 'is-gold' ),
 		);
-	} else {
-		// Nothing assigned yet - say so on screen rather than open an empty panel.
-		echo '<p class="menu-overlay__empty">'
-			. esc_html__( 'Assign a menu under Appearance > Menus to the "Main menu" location.', 'lenfant-roi-child' )
-			. '</p>';
-	}
-	?>
+		$lr_rendered = array();
+		foreach ( $lr_buttons as $lr_btn ) {
+			$lr_label = lr_opt( $lr_btn[0] );
+			if ( '' === trim( wp_strip_all_tags( (string) $lr_label ) ) ) {
+				continue;
+			}
+			$lr_url        = lr_opt( $lr_btn[1] );
+			$lr_rendered[] = sprintf(
+				'<a class="menu-panel__btn %1$s" href="%2$s">%3$s</a>',
+				esc_attr( $lr_btn[2] ),
+				esc_url( $lr_url ? $lr_url : '#' ),
+				esc_html( $lr_label )
+			);
+		}
+		if ( $lr_rendered ) {
+			echo '<div class="menu-panel__actions">' . implode( '', $lr_rendered ) . '</div>'; // phpcs:ignore WordPress.Security.EscapingOutput
+		}
+		?>
+	</div>
 </div>
 
 <main id="content">

@@ -44,7 +44,6 @@ function lr_defaults() {
 		'about_text_1'         => 'Every child has the <strong>inner potential</strong> for remarkable growth and development. By fostering their <strong>personal awakening</strong> in a <strong>safe and nurturing environment</strong> that respects their individual freedoms, we prepare children to become well-rounded and responsible adults. The educator is a guide, supporting the child&rsquo;s journey towards self-discovery and autonomous growth.',
 		'about_text_2'         => 'L&rsquo;Enfant Roi provides a <strong>stimulating atmosphere</strong> for your child to explore their unique sensibilities, tailored to their individual characteristics and both their psychological and physical needs.',
 
-		// Visit tab.
 		// Quote (brief p4). Wording is the client's own, kept verbatim.
 		'quote_text'           => '&laquo;&nbsp;L&rsquo;enfant n&rsquo;est pas un vase que l&rsquo;on remplit, mais une source que l&rsquo;on laisse jaillir.&nbsp;&raquo;',
 		'quote_author'         => 'Maria Montessori',
@@ -68,6 +67,14 @@ Notre calendrier est pens&eacute; pour s&rsquo;adapter au mieux au rythme et au 
 		'flex_copy'            => 'Nous n&rsquo;imposons aucun horaire fixe d&rsquo;arriv&eacute;e ou de d&eacute;part&nbsp;: vous organisez les journ&eacute;es de votre enfant en toute libert&eacute;.
 
 Gr&acirc;ce &agrave; nos formules flexibles &agrave; la journ&eacute;e ou &agrave; la demi-journ&eacute;e.',
+
+		// Menu panel buttons (brief: the original has Jobs / FAQ / Contact).
+		'menu_btn_1_label'     => 'Jobs',
+		'menu_btn_1_url'       => '',
+		'menu_btn_2_label'     => 'FAQ',
+		'menu_btn_2_url'       => '',
+		'menu_btn_3_label'     => 'Contact',
+		'menu_btn_3_url'       => '',
 
 		'toolbar_show'         => true,
 		'toolbar_label'        => 'Schedule a visit',
@@ -294,6 +301,24 @@ function lr_customize_register( $wp_customize ) {
 	$text( 'hero_scroll_label', 'lr_hero', __( 'Scroll label', 'lenfant-roi-child' ) );
 	$text( 'hero_footer_title', 'lr_hero', __( 'Line over the photo', 'lenfant-roi-child' ) );
 	$text( 'hero_footer_subtitle', 'lr_hero', __( 'Second line over the photo', 'lenfant-roi-child' ) );
+
+	/* --- menu panel buttons ----------------------------------------------- */
+	$wp_customize->add_section(
+		'lr_menu_buttons',
+		array(
+			'title'       => __( 'Menu buttons', 'lenfant-roi-child' ),
+			'description' => __( 'The three pill buttons under the links in the slide-out menu. Clear a label to remove that button.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+	foreach ( array(
+		1 => __( 'First button (dark)', 'lenfant-roi-child' ),
+		2 => __( 'Second button (outlined)', 'lenfant-roi-child' ),
+		3 => __( 'Third button (gold)', 'lenfant-roi-child' ),
+	) as $lr_n => $lr_title ) {
+		$text( 'menu_btn_' . $lr_n . '_label', 'lr_menu_buttons', $lr_title );
+		$text( 'menu_btn_' . $lr_n . '_url', 'lr_menu_buttons', __( '...its link', 'lenfant-roi-child' ), 'url' );
+	}
 
 	/* --- about ------------------------------------------------------------ */
 	$wp_customize->add_section(

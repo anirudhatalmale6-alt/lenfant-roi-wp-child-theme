@@ -112,44 +112,91 @@ body.admin-bar .page__header { top: 32px; }
 .burger:hover span:nth-child(1) { transform: translateY(-9px); }
 .burger:hover span:nth-child(3) { transform: translateY(9px); }
 
-/* the round button turns into a close cross while the menu is open. The white
-   header bar stays on top of the overlay, so the bars stay dark. */
-.burger.is-open { background: transparent; }
+/* Open, the original FILLS the circle gold and turns the bars white - it is not
+   a transparent ring with dark bars, which is what I had. Measured with the
+   menu open: background #d7a33d, 1px gold border, still 53px and round. */
+.burger.is-open { background: var(--color-primary); border-color: var(--color-primary); }
+.burger.is-open span { background: var(--color-light); }
 .burger.is-open span:nth-child(1) { transform: rotate(45deg); }
 .burger.is-open span:nth-child(2) { opacity: 0; }
 .burger.is-open span:nth-child(3) { transform: rotate(-45deg); }
 
-/* --- full-screen menu ----------------------------------------------------- */
-.menu-overlay {
-	position: fixed; inset: 0; z-index: 55;
-	display: flex; align-items: center; justify-content: center;
-	padding: var(--height-header-nav) 2.5rem 2.5rem;
-	background: var(--color-secondary);
+/* --- the menu panel ------------------------------------------------------- */
+/* Measured off the original with the menu open: a WHITE panel 600px wide down
+   the right-hand side (1280 - 600 = x 680), full height, with the page dimmed
+   behind it. It is not a full-screen overlay - that was my earlier guess. */
+.menu-scrim {
+	position: fixed; inset: 0; z-index: 54;
+	background: rgba(29, 29, 27, .55);
 	opacity: 0; visibility: hidden;
 	transition: opacity .45s ease, visibility .45s ease;
 }
-.menu-overlay.is-open { opacity: 1; visibility: visible; }
-.menu-overlay__list {
-	list-style: none; margin: 0; padding: 0;
-	text-align: center;
-	display: flex; flex-direction: column; gap: 1.6rem;
+.menu-scrim.is-open { opacity: 1; visibility: visible; }
+
+.menu-panel {
+	position: fixed; top: 0; right: 0; bottom: 0; z-index: 55;
+	width: min(600px, 100%);
+	background: var(--color-light);
+	overflow-y: auto;
+	transform: translateX(100%);
+	visibility: hidden;
+	transition: transform .45s cubic-bezier(.22,1,.36,1), visibility .45s ease;
 }
-.menu-overlay__list a {
-	display: inline-block;
-	font-family: var(--font-family-secondary);
-	font-size: var(--font-size-h3);
-	line-height: 1.2; text-transform: uppercase;
-	color: var(--color-light);
+.menu-panel.is-open { transform: translateX(0); visibility: visible; }
+
+.menu-panel__inner {
+	min-height: 100%;
+	display: flex; flex-direction: column;
+	padding: calc(var(--height-header-nav) + 5rem) 4rem 4rem;
+}
+
+.menu-panel__list { list-style: none; margin: 0 0 auto; padding: 0; }
+/* 67px between link baselines on the original. */
+.menu-panel__list > li + li { margin-top: 2.4rem; }
+.menu-panel__list a {
+	display: block;
+	font-family: var(--font-family-primary);
+	font-size: 1.4rem; font-weight: 500; letter-spacing: .5px;
+	color: var(--color-tertiary);
 	transition: color .25s ease;
 }
-.menu-overlay__list a:hover,
-.menu-overlay__list .current-menu-item > a { color: var(--color-primary); }
-.menu-overlay__list .sub-menu {
-	list-style: none; margin: .8rem 0 0; padding: 0;
-	display: flex; flex-direction: column; gap: .4rem;
+.menu-panel__list a:hover,
+.menu-panel__list .current-menu-item > a { color: var(--color-primary); }
+.menu-panel__list .sub-menu {
+	list-style: none; margin: 1.2rem 0 0; padding: 0 0 0 1.6rem;
+	display: flex; flex-direction: column; gap: .9rem;
 }
-.menu-overlay__list .sub-menu a { font-family: var(--font-family-primary); font-size: var(--font-size-default); }
-.menu-overlay__empty { color: var(--color-light); max-width: 42rem; text-align: center; }
+.menu-panel__list .sub-menu a { font-size: 1.3rem; color: #6b6b68; }
+.menu-panel__empty { margin: 0 0 auto; color: #6b6b68; }
+
+/* Three pill buttons: 520x52, radius 28px, all three measured. */
+.menu-panel__actions {
+	margin-top: 4rem;
+	display: flex; flex-direction: column; gap: 1rem;
+}
+.menu-panel__btn {
+	display: flex; align-items: center; justify-content: center;
+	min-height: 52px; padding: 0 2rem;
+	border-radius: 28px;
+	font-size: 1.4rem; font-weight: 500; letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: background .25s ease, color .25s ease, border-color .25s ease;
+}
+.menu-panel__btn.is-dark {
+	background: var(--color-tertiary); color: var(--color-light);
+	border: 2px solid var(--color-tertiary);
+}
+.menu-panel__btn.is-dark:hover { background: transparent; color: var(--color-tertiary); }
+.menu-panel__btn.is-outline {
+	background: transparent; color: var(--color-tertiary);
+	border: 1px solid var(--color-primary);
+}
+.menu-panel__btn.is-outline:hover { background: var(--color-primary); color: var(--color-light); }
+.menu-panel__btn.is-gold {
+	background: var(--color-primary); color: var(--color-light);
+	border: 2px solid var(--color-primary);
+}
+.menu-panel__btn.is-gold:hover { background: transparent; color: var(--color-primary); }
 
 body.menu-is-open { overflow: hidden; }
 

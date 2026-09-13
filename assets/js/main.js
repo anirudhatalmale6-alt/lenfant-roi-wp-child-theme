@@ -108,36 +108,48 @@
 		lastY = y;
 	}
 
-	/* --- 4. full-screen menu ---------------------------------------------- */
+	/* --- 4. the menu panel ------------------------------------------------- */
 	var burger = document.querySelector('.burger');
-	var overlay = document.getElementById('lr-menu');
+	var panel = document.getElementById('lr-menu');
+	var scrim = document.getElementById('lr-menu-scrim');
 
 	function setMenu(open) {
-		if (!burger || !overlay) return;
+		if (!burger || !panel) return;
 		burger.classList.toggle('is-open', open);
 		burger.setAttribute('aria-expanded', open ? 'true' : 'false');
 		document.body.classList.toggle('menu-is-open', open);
+
 		if (open) {
-			overlay.hidden = false;
+			panel.hidden = false;
+			if (scrim) scrim.hidden = false;
 			/* One frame between removing [hidden] and adding the class, or the
-			   transition has nothing to animate from. */
-			requestAnimationFrame(function () { overlay.classList.add('is-open'); });
+			   panel has nothing to slide from. */
+			requestAnimationFrame(function () {
+				panel.classList.add('is-open');
+				if (scrim) scrim.classList.add('is-open');
+			});
 			if (header) header.classList.remove('is-hidden');
 		} else {
-			overlay.classList.remove('is-open');
+			panel.classList.remove('is-open');
+			if (scrim) scrim.classList.remove('is-open');
 			setTimeout(function () {
-				if (!overlay.classList.contains('is-open')) overlay.hidden = true;
+				if (!panel.classList.contains('is-open')) {
+					panel.hidden = true;
+					if (scrim) scrim.hidden = true;
+				}
 			}, 450);
 		}
 	}
 
-	if (burger && overlay) {
+	if (burger && panel) {
 		burger.addEventListener('click', function () {
 			setMenu(!burger.classList.contains('is-open'));
 		});
-		overlay.addEventListener('click', function (e) {
+		panel.addEventListener('click', function (e) {
 			if (e.target.tagName === 'A') setMenu(false);
 		});
+		/* Clicking the dimmed page closes it, which is what the original does. */
+		if (scrim) scrim.addEventListener('click', function () { setMenu(false); });
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape') setMenu(false);
 		});
