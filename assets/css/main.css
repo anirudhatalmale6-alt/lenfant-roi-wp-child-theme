@@ -490,9 +490,12 @@ body.menu-is-open { overflow: hidden; }
 }
 .no-js .outline__shape { stroke-dasharray: none; }
 
-/* -424/1280 = -33%. Mirrored for the block that bleeds off the right. */
-.section-band--left  .outline { inset: -1px -1px -1px -33%; }
-.section-band--right .outline { inset: -1px -33% -1px -1px; }
+/* Measured on the original at two viewport widths, and it is proportional:
+   left edge -33.1%, RIGHT EDGE 67%, so the stadium is one section-width wide
+   and simply shifted left. It does NOT reach the far edge of the screen - that
+   was my error, the shape looked full-width because I pinned right to -1px. */
+.section-band--left  .outline { inset: -1px 33% -1px -33%; }
+.section-band--right .outline { inset: -1px -33% -1px 33%; }
 
 .section-band__inner {
 	position: relative; z-index: 3;

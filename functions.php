@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LR_VERSION', '1.6.0' );
+define( 'LR_VERSION', '1.6.1' );
 
 require_once get_stylesheet_directory() . '/inc/svg.php';
 require_once get_stylesheet_directory() . '/inc/customizer.php';
