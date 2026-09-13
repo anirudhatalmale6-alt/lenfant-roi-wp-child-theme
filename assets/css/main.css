@@ -456,6 +456,31 @@ body.menu-is-open { overflow: hidden; }
 .section-band { position: relative; padding-block: clamp(4rem, 7vw, 9rem) 0; }
 .section-band .arabesque { --arabesque-height: 440px; }
 
+/* --- the drawn stadium outline -------------------------------------------- */
+/* Sits over the panel and extends past it, so the gold line reads as a loop
+   AROUND the block rather than a border on it - that is how the original's
+   CSR block is put together. Stroke colour comes from `color` via
+   currentColor, so one CSS property retints it. */
+.outline {
+	position: absolute; z-index: 2;
+	inset: -18px -22px;
+	color: var(--color-primary);
+	pointer-events: none;
+}
+.outline__svg { width: 100%; height: 100%; overflow: visible; }
+.outline__shape {
+	/* vector-effect keeps the hairline 1px however hard the viewBox is
+	   stretched - without it, preserveAspectRatio="none" would smear the
+	   stroke thicker on one axis than the other. */
+	vector-effect: non-scaling-stroke;
+	stroke-width: 1;
+	/* Start undrawn. JS replaces this with the scrubbed split on first frame,
+	   so a no-JS visitor simply never sees the line rather than seeing it
+	   stuck at zero length. */
+	stroke-dasharray: 0 100000;
+}
+.no-js .outline__shape { stroke-dasharray: none; }
+
 /* The panel bleeds off one edge and is rounded on the other. 100vw keeps the
    bleed correct regardless of where the container's gutter falls. */
 .section-band__panel {

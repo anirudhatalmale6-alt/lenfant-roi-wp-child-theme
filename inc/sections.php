@@ -14,6 +14,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * The gold stadium outline that draws itself as the block scrolls in.
+ *
+ * Copied from the original's CSR block rather than approximated: one <rect>
+ * 1500x500 at (1,1) with rx/ry 250, stroked in currentColor at 1px, inside a
+ * viewBox of 1501x501. The extra pixel is what stops a 1px stroke being clipped
+ * in half by the viewBox edge.
+ *
+ * preserveAspectRatio="none" lets the stadium stretch to whatever the block's
+ * proportions are - the original's is 3:1, ours are not.
+ *
+ * @return string
+ */
+function lr_outline() {
+	return '<div class="outline" aria-hidden="true">'
+		. '<svg class="outline__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1501 501"'
+		. ' preserveAspectRatio="none" focusable="false">'
+		. '<rect class="outline__shape" fill="none" stroke="currentColor"'
+		. ' x="1" y="1" width="1500" height="500" rx="250" ry="250"></rect>'
+		. '</svg></div>';
+}
+
+/**
  * The gold guide lines that make up the arabesque motif.
  *
  * Each line is a plain 1px div the full height of the block, rotated by CSS.
@@ -331,7 +353,8 @@ function lr_section_band( $args ) {
 
 		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
-		<div class="section-band__panel" data-animation="reveal" data-delay="100">
+		<div class="section-band__panel" data-draw data-animation="reveal" data-delay="100">
+			<?php echo lr_outline(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 			<div class="section-band__inner container">
 
 				<div class="section-band__aside">
