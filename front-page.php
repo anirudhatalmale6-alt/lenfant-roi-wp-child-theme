@@ -33,6 +33,7 @@ if ( $lr_has_own_build ) {
 	echo lr_section_hours();    // phpcs:ignore WordPress.Security.EscapingOutput
 	echo lr_section_holidays(); // phpcs:ignore WordPress.Security.EscapingOutput
 	echo lr_section_flex();     // phpcs:ignore WordPress.Security.EscapingOutput
+	echo lr_section_access();   // phpcs:ignore WordPress.Security.EscapingOutput
 }
 
 get_footer();

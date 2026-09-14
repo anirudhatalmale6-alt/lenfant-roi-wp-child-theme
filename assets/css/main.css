@@ -591,6 +591,76 @@ body.menu-is-open { overflow: hidden; }
 .section-band--right .section-band__copy { margin-left: auto; }
 .section-band__copy p + p { margin-top: 1.4rem; }
 
+/* --- p6: accessibility ---------------------------------------------------- */
+.section-access { position: relative; padding-block: clamp(5rem, 8vw, 9rem); }
+.section-access .arabesque { --arabesque-height: 520px; }
+.section-access__inner { position: relative; z-index: 2; }
+
+/* A long pill, as on the slide - the radius is half the height so the ends stay
+   semicircular whatever the photo's aspect ratio is. */
+.section-access__media {
+	margin: 0 auto clamp(3rem, 5vw, 6rem);
+	width: min(100%, 1000px);
+	aspect-ratio: 1000 / 310;
+	border-radius: 999px;
+	overflow: hidden;
+}
+.section-access__media img { width: 100%; height: 100%; object-fit: cover; }
+
+.section-access__head {
+	display: flex; align-items: flex-end; gap: 2rem;
+	justify-content: space-between;
+}
+.section-access__heading {
+	font-family: var(--font-family-secondary);
+	font-size: clamp(2.6rem, 4vw, 4.8rem);
+	font-weight: 400; line-height: 1.15;
+}
+.section-access__car { width: clamp(80px, 10vw, 140px); height: auto; flex: 0 0 auto; }
+
+.section-access__rule {
+	display: block; height: 1px;
+	margin-top: clamp(1.4rem, 2vw, 2.2rem);
+	background: var(--color-primary);
+}
+
+.section-access__cols {
+	margin-top: clamp(3rem, 5vw, 5rem);
+	display: grid; grid-template-columns: 1fr 1fr;
+	gap: clamp(3rem, 6vw, 8rem);
+	align-items: start;
+}
+
+.section-access__aside { position: relative; padding-bottom: 180px; }
+.section-access__list { list-style: none; margin: 0; padding: 0 0 0 3.5rem; }
+.section-access__list li {
+	position: relative;
+	margin-bottom: 1.6rem;
+	font-size: clamp(1.9rem, 2.2vw, 2.6rem);
+	color: var(--color-primary);
+}
+/* The bullet is drawn rather than list-style, so its size follows the type. */
+.section-access__list li::before {
+	content: ''; position: absolute; left: -2.2rem; top: .62em;
+	width: .5rem; height: .5rem; border-radius: 50%;
+	background: currentColor;
+}
+
+.section-access__bus { position: absolute; left: 0; bottom: 0; width: clamp(70px, 8vw, 100px); }
+.section-access__route {
+	position: absolute; left: 38%; bottom: -10px;
+	width: clamp(120px, 16vw, 200px); height: auto;
+	color: var(--color-tertiary);
+}
+
+/* Keeps clear of the fixed "Schedule a visit" tab floating over the right edge
+   - without this the last words of each line run underneath it. */
+.section-access__copy {
+	line-height: 1.75;
+	padding-right: clamp(0px, 5vw, 70px);
+}
+.section-access__copy p + p { margin-top: 1.2rem; }
+
 /* --- responsive ----------------------------------------------------------- */
 @media (max-width: 1024px) {
 	.page__header { padding-inline: 3.2rem; }
@@ -631,5 +701,13 @@ body.menu-is-open { overflow: hidden; }
 	.section-band__icon { width: 62px; }
 	.section-band--right .section-band__inner { text-align: center; padding-right: 0; }
 	.section-band--right .section-band__copy { margin-left: 0; }
+
+	/* Two columns do not fit; the decorative route would then collide with the
+	   copy, so it goes. */
+	.section-access__cols { grid-template-columns: 1fr; }
+	.section-access__aside { padding-bottom: 110px; }
+	.section-access__route { display: none; }
+	.section-access__media { aspect-ratio: 3 / 2; border-radius: 3em; }
+	.section-access__head { align-items: center; }
 	.section-custom-about::after { border-radius: 0 0 420px 420px; }
 }

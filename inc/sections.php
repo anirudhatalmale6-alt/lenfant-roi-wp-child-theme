@@ -516,3 +516,104 @@ function lr_section_flex() {
 	);
 }
 add_shortcode( 'lr_about', 'lr_section_about' );
+
+/**
+ * Brief p6 - accessibility.
+ *
+ * Photo in a long pill at the top, a serif heading with the car at its right
+ * end, a gold rule, then two columns: the transport list in gold on the left
+ * and the copy on the right. The dashed route and the pin are decoration and
+ * are drawn inline rather than shipped as files - they are two paths.
+ *
+ * @param array $args {
+ *     @type string $image_url  Photo. Falls back to the Customizer media field.
+ *     @type string $heading    Serif heading.
+ *     @type string $list       One entry per line.
+ *     @type string $copy       Body copy.
+ * }
+ * @return string
+ */
+function lr_section_access( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'image_url' => '',
+			'heading'   => lr_opt( 'access_heading' ),
+			'list'      => lr_opt( 'access_list' ),
+			'copy'      => lr_opt( 'access_copy' ),
+		)
+	);
+
+	if ( '' === trim( wp_strip_all_tags( $a['heading'] . $a['copy'] ) ) ) {
+		return '';
+	}
+
+	$photo = $a['image_url'];
+	if ( ! $photo ) {
+		$id    = (int) lr_opt( 'access_image' );
+		$photo = $id ? wp_get_attachment_image_url( $id, 'full' ) : '';
+	}
+
+	// One item per line, blanks dropped, so an emptied line does not leave a bullet.
+	$items = array_values(
+		array_filter(
+			array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) $a['list'] ) ),
+			function ( $line ) {
+				return '' !== $line;
+			}
+		)
+	);
+
+	$img = get_stylesheet_directory_uri() . '/assets/img/';
+
+	ob_start();
+	?>
+	<section class="section-access" id="acces">
+		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
+
+		<div class="section-access__inner container">
+
+			<?php if ( $photo ) : ?>
+				<figure class="section-access__media" data-animation="reveal" data-delay="100">
+					<img src="<?php echo esc_url( $photo ); ?>" alt="" loading="lazy" decoding="async">
+				</figure>
+			<?php endif; ?>
+
+			<div class="section-access__head" data-animation="reveal" data-delay="150">
+				<h2 class="section-access__heading"><?php echo wp_kses_post( $a['heading'] ); ?></h2>
+				<img class="section-access__car" src="<?php echo esc_url( $img . 'icon-car.png' ); ?>" alt="">
+			</div>
+			<span class="section-access__rule" aria-hidden="true"></span>
+
+			<div class="section-access__cols">
+				<div class="section-access__aside" data-animation="reveal" data-delay="200">
+					<?php if ( $items ) : ?>
+						<ul class="section-access__list">
+							<?php foreach ( $items as $item ) : ?>
+								<li><?php echo wp_kses_post( $item ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
+
+					<img class="section-access__bus" src="<?php echo esc_url( $img . 'icon-bus.png' ); ?>" alt="">
+
+					<svg class="section-access__route" viewBox="0 0 200 190" fill="none" aria-hidden="true" focusable="false">
+						<path d="M14 186c26 6 44-14 40-34-4-21-34-20-38-42-4-21 22-34 46-40 24-6 44-18 46-38"
+							stroke="currentColor" stroke-width="2" stroke-dasharray="7 9" stroke-linecap="round"/>
+						<circle cx="52" cy="152" r="9" stroke="currentColor" stroke-width="2" stroke-dasharray="5 6"/>
+						<circle cx="84" cy="74" r="9" stroke="currentColor" stroke-width="2" stroke-dasharray="5 6"/>
+						<path d="M108 4a17 17 0 0 0-17 17c0 12 17 29 17 29s17-17 17-29a17 17 0 0 0-17-17Zm0 23a6 6 0 1 1 0-12 6 6 0 0 1 0 12Z"
+							fill="currentColor"/>
+					</svg>
+				</div>
+
+				<div class="section-access__copy" data-animation="reveal" data-delay="250">
+					<?php echo wpautop( wp_kses_post( $a['copy'] ) ); ?>
+				</div>
+			</div>
+
+		</div>
+	</section>
+	<?php
+	return ob_get_clean();
+}

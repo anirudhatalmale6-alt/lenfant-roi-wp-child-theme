@@ -45,6 +45,10 @@
 			<key name="flex_heading" />
 			<key name="flex_copy" />
 
+			<key name="access_heading" />
+			<key name="access_list" />
+			<key name="access_copy" />
+
 			<key name="menu_btn_1_label" />
 			<key name="menu_btn_1_url" />
 			<key name="menu_btn_2_label" />
@@ -93,6 +97,13 @@
 				<field editor_type="LINE">label</field>
 				<field editor_type="AREA">heading</field>
 				<field editor_type="LINE">value</field>
+				<field editor_type="VISUAL">copy</field>
+			</fields>
+		</widget>
+		<widget name="lr-access">
+			<fields>
+				<field editor_type="AREA">heading</field>
+				<field editor_type="AREA">list</field>
 				<field editor_type="VISUAL">copy</field>
 			</fields>
 		</widget>

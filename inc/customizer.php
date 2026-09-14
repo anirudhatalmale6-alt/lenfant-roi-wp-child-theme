@@ -68,6 +68,15 @@ Notre calendrier est pens&eacute; pour s&rsquo;adapter au mieux au rythme et au 
 
 Gr&acirc;ce &agrave; nos formules flexibles &agrave; la journ&eacute;e ou &agrave; la demi-journ&eacute;e.',
 
+		// Accessibility (brief p6).
+		'access_image'         => '',
+		'access_heading'       => 'Une accessibilit&eacute; pens&eacute;e pour les familles',
+		'access_list'          => "Bus 1\nBus 25\nVoiture\nMetro M1",
+		'access_copy'          => 'La cr&egrave;che est id&eacute;alement situ&eacute;e pour faciliter vos d&eacute;placements au quotidien&nbsp;:
+Accessible en transports gr&acirc;ce &agrave; la proximit&eacute; imm&eacute;diate du <strong>bus</strong> et du <strong>m&eacute;tro</strong>.
+Proche de l&rsquo;autoroute, avec des <strong>places de parking</strong> d&eacute;di&eacute;es pour d&eacute;poser vos enfants en toute s&eacute;r&eacute;nit&eacute;.
+<strong>Un local des poussettes</strong> adapt&eacute; pour des trajets fluides et confortables.',
+
 		// Menu panel buttons (brief: the original has Jobs / FAQ / Contact).
 		'menu_btn_1_label'     => 'Jobs',
 		'menu_btn_1_url'       => '',
@@ -301,6 +310,37 @@ function lr_customize_register( $wp_customize ) {
 	$text( 'hero_scroll_label', 'lr_hero', __( 'Scroll label', 'lenfant-roi-child' ) );
 	$text( 'hero_footer_title', 'lr_hero', __( 'Line over the photo', 'lenfant-roi-child' ) );
 	$text( 'hero_footer_subtitle', 'lr_hero', __( 'Second line over the photo', 'lenfant-roi-child' ) );
+
+	/* --- accessibility (brief p6) ----------------------------------------- */
+	$wp_customize->add_section(
+		'lr_access',
+		array(
+			'title'       => __( 'Accessibility', 'lenfant-roi-child' ),
+			'description' => __( 'The photo, transport list and copy. Clear the heading and the text to remove the section.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+	$wp_customize->add_setting( 'access_image', array( 'default' => '', 'sanitize_callback' => 'absint' ) );
+	$wp_customize->add_control(
+		new WP_Customize_Media_Control(
+			$wp_customize,
+			'access_image',
+			array(
+				'label'     => __( 'Photo', 'lenfant-roi-child' ),
+				'section'   => 'lr_access',
+				'mime_type' => 'image',
+			)
+		)
+	);
+	$text( 'access_heading', 'lr_access', __( 'Heading', 'lenfant-roi-child' ), 'textarea' );
+	$text(
+		'access_list',
+		'lr_access',
+		__( 'Transport list', 'lenfant-roi-child' ),
+		'textarea',
+		__( 'One per line. An empty line is skipped rather than leaving a stray bullet.', 'lenfant-roi-child' )
+	);
+	$text( 'access_copy', 'lr_access', __( 'Text on the right', 'lenfant-roi-child' ), 'textarea' );
 
 	/* --- menu panel buttons ----------------------------------------------- */
 	$wp_customize->add_section(

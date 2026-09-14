@@ -357,8 +357,84 @@ class LR_Widget_Band extends LR_Section_Widget {
 	}
 }
 
+
 /**
- * Register the four widgets.
+ * Brief p6 - accessibility.
+ */
+class LR_Widget_Access extends LR_Section_Widget {
+
+	public function get_name() {
+		return 'lr-access';
+	}
+
+	public function get_title() {
+		return __( 'Accessibility', 'lenfant-roi-child' );
+	}
+
+	public function get_icon() {
+		return 'eicon-map-pin';
+	}
+
+	protected function register_controls() {
+		$this->start_controls_section(
+			'content',
+			array( 'label' => __( 'Accessibility', 'lenfant-roi-child' ) )
+		);
+
+		$this->add_control(
+			'image',
+			array(
+				'label' => __( 'Photo', 'lenfant-roi-child' ),
+				'type'  => \Elementor\Controls_Manager::MEDIA,
+			)
+		);
+		$this->add_control(
+			'heading',
+			array(
+				'label'   => __( 'Heading', 'lenfant-roi-child' ),
+				'type'    => \Elementor\Controls_Manager::TEXTAREA,
+				'rows'    => 2,
+				'default' => lr_opt( 'access_heading' ),
+			)
+		);
+		$this->add_control(
+			'list',
+			array(
+				'label'       => __( 'Transport list', 'lenfant-roi-child' ),
+				'type'        => \Elementor\Controls_Manager::TEXTAREA,
+				'rows'        => 5,
+				'default'     => lr_opt( 'access_list' ),
+				'description' => __( 'One per line.', 'lenfant-roi-child' ),
+			)
+		);
+		$this->add_control(
+			'copy',
+			array(
+				'label'   => __( 'Text on the right', 'lenfant-roi-child' ),
+				'type'    => \Elementor\Controls_Manager::WYSIWYG,
+				'default' => wpautop( lr_opt( 'access_copy' ) ),
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function render() {
+		$s = $this->get_settings_for_display();
+
+		echo lr_section_access( // phpcs:ignore WordPress.Security.EscapingOutput
+			array(
+				'image_url' => isset( $s['image']['url'] ) ? $s['image']['url'] : '',
+				'heading'   => $s['heading'],
+				'list'      => $s['list'],
+				'copy'      => $s['copy'],
+			)
+		);
+	}
+}
+
+/**
+ * Register the widgets.
  *
  * @param \Elementor\Widgets_Manager $manager Widget manager.
  */
@@ -367,4 +443,5 @@ function lr_elementor_widgets( $manager ) {
 	$manager->register( new LR_Widget_About() );
 	$manager->register( new LR_Widget_Quote() );
 	$manager->register( new LR_Widget_Band() );
+	$manager->register( new LR_Widget_Access() );
 }
