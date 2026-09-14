@@ -133,7 +133,7 @@ function lr_hero_media() {
  *
  * @return string
  */
-function lr_hero_title() {
+function lr_hero_title( $subtitle = null ) {
 	$id = (int) lr_opt( 'hero_title_image' );
 
 	if ( $id ) {
@@ -150,7 +150,9 @@ function lr_hero_title() {
 		$lettering = lr_svg( 'hero-title' );
 	}
 
-	$subtitle = lr_opt( 'hero_subtitle' );
+	if ( null === $subtitle ) {
+		$subtitle = lr_opt( 'hero_subtitle' );
+	}
 
 	return '<h1 class="section__title" data-animation="reveal-text">'
 		. $lettering
@@ -163,7 +165,16 @@ function lr_hero_title() {
  *
  * @return string
  */
-function lr_section_hero() {
+function lr_section_hero( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'subtitle'        => lr_opt( 'hero_subtitle' ),
+			'footer_title'    => lr_opt( 'hero_footer_title' ),
+			'footer_subtitle' => lr_opt( 'hero_footer_subtitle' ),
+		)
+	);
+
 	ob_start();
 	?>
 	<header class="section-hero-page-home" id="hero-home">
@@ -172,7 +183,7 @@ function lr_section_hero() {
 			<?php echo lr_arabesque(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
 			<div class="section__header">
-				<?php echo lr_hero_title(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
+				<?php echo lr_hero_title( $a['subtitle'] ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
 				<i class="section__mark" data-animation="reveal" data-delay="200">
 					<?php lr_the_svg( 'crown' ); ?>
@@ -190,8 +201,8 @@ function lr_section_hero() {
 				</div>
 
 				<div class="section__footer" id="more">
-					<p class="section__footer__title"><?php echo wp_kses_post( lr_opt( 'hero_footer_title' ) ); ?></p>
-					<p class="section__footer__subtitle"><?php echo wp_kses_post( lr_opt( 'hero_footer_subtitle' ) ); ?></p>
+					<p class="section__footer__title"><?php echo wp_kses_post( $a['footer_title'] ); ?></p>
+					<p class="section__footer__subtitle"><?php echo wp_kses_post( $a['footer_subtitle'] ); ?></p>
 					<i class="section__icon"><?php lr_the_svg( 'divider' ); ?></i>
 				</div>
 			</div>
@@ -208,7 +219,15 @@ add_shortcode( 'lr_hero', 'lr_section_hero' );
  *
  * @return string
  */
-function lr_about_lettering() {
+function lr_about_lettering( $url = '' ) {
+	if ( $url ) {
+		return sprintf(
+			'<img class="section__title__image" src="%s" alt="%s">',
+			esc_url( $url ),
+			esc_attr( get_bloginfo( 'name' ) )
+		);
+	}
+
 	$id = (int) lr_opt( 'about_image' );
 
 	if ( $id ) {
@@ -227,6 +246,34 @@ function lr_about_lettering() {
 }
 
 /**
+ * Strip one redundant wrapping <p> from a value.
+ *
+ * Elementor's WYSIWYG control hands back "<p>text</p>", and the About section
+ * puts its own <p data-animation> around each paragraph. Nested <p> is invalid,
+ * so the browser closes the outer one early and the entrance animation ends up
+ * attached to an empty element while the text sits outside it. Only unwraps
+ * when the value is a SINGLE paragraph - multi-paragraph HTML is left alone.
+ *
+ * @param string $html Raw value.
+ * @return string
+ */
+function lr_unwrap_p( $html ) {
+	$trimmed = trim( (string) $html );
+
+	if ( 0 !== stripos( $trimmed, '<p>' ) || substr( strtolower( $trimmed ), -4 ) !== '</p>' ) {
+		return $html;
+	}
+	$inner = substr( $trimmed, 3, -4 );
+
+	// More than one paragraph in there - leave it be.
+	if ( false !== stripos( $inner, '<p' ) ) {
+		return $html;
+	}
+
+	return $inner;
+}
+
+/**
  * Render the about section.
  *
  * The lettering and both paragraphs come from the Customizer, so the demo
@@ -234,10 +281,19 @@ function lr_about_lettering() {
  *
  * @return string
  */
-function lr_section_about() {
+function lr_section_about( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'image_url' => '',
+			'text_1'    => lr_opt( 'about_text_1' ),
+			'text_2'    => lr_opt( 'about_text_2' ),
+		)
+	);
+
 	$paragraphs = array(
-		array( lr_opt( 'about_text_1' ), 150 ),
-		array( lr_opt( 'about_text_2' ), 250 ),
+		array( lr_unwrap_p( $a['text_1'] ), 150 ),
+		array( lr_unwrap_p( $a['text_2'] ), 250 ),
 	);
 
 	ob_start();
@@ -248,7 +304,7 @@ function lr_section_about() {
 
 			<div class="section__header">
 				<h2 class="section__title" data-animation="reveal" data-delay="100">
-					<?php echo lr_about_lettering(); // phpcs:ignore WordPress.Security.EscapingOutput ?>
+					<?php echo lr_about_lettering( $a['image_url'] ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 				</h2>
 			</div>
 
@@ -279,9 +335,17 @@ function lr_section_about() {
  *
  * @return string
  */
-function lr_section_quote() {
-	$quote  = lr_opt( 'quote_text' );
-	$author = lr_opt( 'quote_author' );
+function lr_section_quote( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'quote'  => lr_opt( 'quote_text' ),
+			'author' => lr_opt( 'quote_author' ),
+		)
+	);
+
+	$quote  = $a['quote'];
+	$author = $a['author'];
 
 	if ( '' === trim( wp_strip_all_tags( (string) $quote ) ) ) {
 		return '';
@@ -332,7 +396,8 @@ function lr_section_band( $args ) {
 			'id'      => '',
 			'side'    => 'left',
 			'label'   => '',
-			'icon'    => '',
+			'icon'     => '',
+			'icon_url' => '',
 			'heading' => '',
 			'value'   => '',
 			'copy'    => '',

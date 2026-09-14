@@ -9,11 +9,56 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LR_VERSION', '1.7.0' );
+define( 'LR_VERSION', '1.8.0' );
 
 require_once get_stylesheet_directory() . '/inc/svg.php';
 require_once get_stylesheet_directory() . '/inc/customizer.php';
 require_once get_stylesheet_directory() . '/inc/sections.php';
+
+/**
+ * Elementor widgets, only when Elementor is actually running.
+ *
+ * Two ordering traps here, both hit while building this:
+ *
+ * 1. 'elementor/loaded' fires during plugins_loaded, which is BEFORE a theme's
+ *    functions.php runs. Hooking it here would register a callback for an event
+ *    that has already happened, so did_action() is the check to use.
+ * 2. Even then, \Elementor\Widget_Base is autoloaded lazily and does NOT exist
+ *    yet at this point - requiring the classes here fatals. They are pulled in
+ *    inside the register callback, by which time the base class is loaded.
+ */
+if ( did_action( 'elementor/loaded' ) ) {
+	add_action( 'elementor/elements/categories_registered', 'lr_elementor_category' );
+	add_action( 'elementor/widgets/register', 'lr_elementor_boot' );
+}
+
+/**
+ * Give the sections their own panel category instead of burying them in General.
+ *
+ * Deliberately kept out of inc/elementor.php: it touches no Elementor class, so
+ * it can run without the file being loaded.
+ *
+ * @param \Elementor\Elements_Manager $manager Elements manager.
+ */
+function lr_elementor_category( $manager ) {
+	$manager->add_category(
+		'smileyworld',
+		array(
+			'title' => __( 'SmileyWorld', 'lenfant-roi-child' ),
+			'icon'  => 'eicon-favorite',
+		)
+	);
+}
+
+/**
+ * Load the widget classes and register them.
+ *
+ * @param \Elementor\Widgets_Manager $manager Widgets manager.
+ */
+function lr_elementor_boot( $manager ) {
+	require_once get_stylesheet_directory() . '/inc/elementor.php';
+	lr_elementor_widgets( $manager );
+}
 
 /**
  * Theme supports and menu locations.

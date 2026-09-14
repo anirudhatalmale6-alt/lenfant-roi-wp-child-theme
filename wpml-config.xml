@@ -1,0 +1,100 @@
+<wpml-config>
+	<!--
+		Two separate jobs here.
+
+		1. <admin-texts> exposes the theme_mod settings to WPML String
+		   Translation. Without this WPML cannot see them at all - theme mods
+		   are not posts, not options WPML scans by default, and they would
+		   simply never appear for translation. Any NEW Customizer field has to
+		   be added to this list too, or it silently stays untranslatable.
+
+		2. <custom-fields> tells WPML to copy Elementor's page data to the
+		   translation rather than translate it blindly, so the translated page
+		   keeps the same layout and only its text is translated through
+		   Elementor's own integration.
+	-->
+
+	<admin-texts>
+		<key name="theme_mods_lenfant-roi-child">
+			<key name="lang_1_label" />
+			<key name="lang_1_url" />
+			<key name="lang_2_label" />
+			<key name="lang_2_url" />
+
+			<key name="hero_subtitle" />
+			<key name="hero_scroll_label" />
+			<key name="hero_footer_title" />
+			<key name="hero_footer_subtitle" />
+
+			<key name="about_text_1" />
+			<key name="about_text_2" />
+
+			<key name="quote_text" />
+			<key name="quote_author" />
+
+			<key name="hours_label" />
+			<key name="hours_heading" />
+			<key name="hours_value" />
+			<key name="hours_copy" />
+
+			<key name="holidays_label" />
+			<key name="holidays_heading" />
+			<key name="holidays_copy" />
+
+			<key name="flex_label" />
+			<key name="flex_heading" />
+			<key name="flex_copy" />
+
+			<key name="menu_btn_1_label" />
+			<key name="menu_btn_1_url" />
+			<key name="menu_btn_2_label" />
+			<key name="menu_btn_2_url" />
+			<key name="menu_btn_3_label" />
+			<key name="menu_btn_3_url" />
+
+			<key name="toolbar_label" />
+			<key name="toolbar_url" />
+		</key>
+	</admin-texts>
+
+	<custom-fields>
+		<custom-field action="copy">_elementor_edit_mode</custom-field>
+		<custom-field action="copy">_elementor_template_type</custom-field>
+		<custom-field action="copy">_elementor_version</custom-field>
+	</custom-fields>
+
+	<!--
+		Which fields inside each custom widget hold translatable text. Elementor
+		handles its own widgets, but it has no way to know what is inside ours -
+		unlisted fields are skipped without warning.
+	-->
+	<elementor-widgets>
+		<widget name="lr-hero">
+			<fields>
+				<field editor_type="LINE">subtitle</field>
+				<field editor_type="LINE">footer_title</field>
+				<field editor_type="LINE">footer_subtitle</field>
+			</fields>
+		</widget>
+		<widget name="lr-about">
+			<fields>
+				<field editor_type="VISUAL">text_1</field>
+				<field editor_type="VISUAL">text_2</field>
+			</fields>
+		</widget>
+		<widget name="lr-quote">
+			<fields>
+				<field editor_type="AREA">quote</field>
+				<field editor_type="LINE">author</field>
+			</fields>
+		</widget>
+		<widget name="lr-band">
+			<fields>
+				<field editor_type="LINE">label</field>
+				<field editor_type="AREA">heading</field>
+				<field editor_type="LINE">value</field>
+				<field editor_type="VISUAL">copy</field>
+			</fields>
+		</widget>
+	</elementor-widgets>
+</wpml-config>
