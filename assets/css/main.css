@@ -661,6 +661,110 @@ body.menu-is-open { overflow: hidden; }
 }
 .section-access__copy p + p { margin-top: 1.2rem; }
 
+/* --- p15: monthly prices -------------------------------------------------- */
+/* The teal panel's TOP is a wide arc - the mirror of the About block's, same
+   1024px trick rounded on the top two corners instead of the bottom two. */
+.section-tarifs {
+	position: relative; isolation: isolate;
+	color: var(--color-light);
+	padding-block: clamp(5rem, 9vw, 11rem) clamp(4rem, 7vw, 8rem);
+}
+.section-tarifs::before {
+	content: ''; position: absolute; inset: -1px; z-index: -1;
+	background: var(--color-brand);
+	/* Elliptical, not circular. A plain "1024px 1024px 0 0" makes a steep dome
+	   that eats into the table headings at the top corners; the slide's arc is
+	   shallow and wide. Horizontal radius half the width, vertical radius only
+	   ~120px - that ratio is what flattens it. */
+	border-radius: 50% 50% 0 0 / clamp(70px, 10vw, 130px) clamp(70px, 10vw, 130px) 0 0;
+}
+
+.section-tarifs__title {
+	text-align: center;
+	font-family: var(--font-family-secondary);
+	font-weight: 400;
+	font-size: clamp(2.8rem, 4vw, 4.6rem);
+}
+
+.section-tarifs__tables {
+	margin-top: clamp(3rem, 5vw, 5rem);
+	display: grid; grid-template-columns: 1fr 1fr;
+	gap: clamp(2.5rem, 5vw, 6rem);
+}
+.tarif__title {
+	text-align: center; font-weight: 700;
+	font-size: clamp(1.8rem, 2.1vw, 2.4rem);
+	color: var(--color-primary);
+}
+.tarif__times {
+	margin-top: .6rem;
+	display: flex; justify-content: center; gap: clamp(1.5rem, 3vw, 4rem);
+	font-size: clamp(1.5rem, 1.7vw, 1.9rem);
+	color: var(--color-primary-light);
+	padding-bottom: 1.2rem;
+	border-bottom: 1px solid var(--color-primary);
+}
+.tarif__rows { list-style: none; margin: 0; padding: 0; }
+.tarif__rows li {
+	display: grid; grid-template-columns: 1fr 1fr;
+	align-items: center;
+	padding-block: clamp(.9rem, 1.6vw, 1.6rem);
+}
+/* The gold rule between label and price runs the height of the table, so it is
+   a border on the price cell rather than a separate element. */
+.tarif__label { text-align: center; font-size: clamp(1.4rem, 1.6vw, 1.8rem); }
+.tarif__price {
+	text-align: center;
+	font-size: clamp(1.5rem, 1.8vw, 2rem);
+	border-left: 1px solid var(--color-primary);
+	padding-block: clamp(.4rem, 1vw, 1rem);
+}
+
+/* --- the formula ---------------------------------------------------------- */
+.section-tarifs__formula {
+	margin: clamp(3rem, 5vw, 5rem) auto 0;
+	display: flex; flex-wrap: wrap;
+	align-items: center; justify-content: center;
+	gap: clamp(.4rem, .8vw, 1rem);
+}
+.formula__circle {
+	display: grid; place-items: center; text-align: center;
+	width: clamp(64px, 7vw, 86px); height: clamp(64px, 7vw, 86px);
+	padding: .4rem;
+	border: 1px solid var(--color-primary);
+	border-radius: 50%;
+	font-size: clamp(.9rem, 1vw, 1.1rem);
+	line-height: 1.2;
+}
+.formula__op {
+	color: var(--color-primary);
+	font-size: clamp(1.6rem, 2vw, 2.4rem);
+	padding-inline: .2rem;
+}
+
+.section-tarifs__note {
+	margin: clamp(1.6rem, 3vw, 2.6rem) auto 0;
+	max-width: 62ch;
+	text-align: center;
+	font-size: clamp(1.1rem, 1.2vw, 1.3rem);
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.section-tarifs__discounts {
+	margin-top: clamp(3.5rem, 6vw, 7rem);
+	display: flex; flex-wrap: wrap;
+	justify-content: center; gap: clamp(2rem, 6vw, 8rem);
+}
+.discount { display: flex; align-items: baseline; gap: 1.2rem; }
+.discount__value {
+	font-family: var(--font-family-secondary);
+	font-size: clamp(3.4rem, 5vw, 6rem);
+	color: var(--color-primary);
+	line-height: 1;
+}
+.discount__label { font-size: clamp(1.4rem, 1.7vw, 1.9rem); }
+
 /* --- responsive ----------------------------------------------------------- */
 @media (max-width: 1024px) {
 	.page__header { padding-inline: 3.2rem; }
@@ -709,5 +813,11 @@ body.menu-is-open { overflow: hidden; }
 	.section-access__route { display: none; }
 	.section-access__media { aspect-ratio: 3 / 2; border-radius: 3em; }
 	.section-access__head { align-items: center; }
+
+	/* Two price tables side by side are unreadable on a phone. */
+	.section-tarifs__tables { grid-template-columns: 1fr; }
+	.section-tarifs::before { border-radius: 50% 50% 0 0 / 45px 45px 0 0; }
+	.formula__circle { width: 58px; height: 58px; font-size: .85rem; }
+	.discount { flex-direction: column; align-items: center; gap: .2rem; }
 	.section-custom-about::after { border-radius: 0 0 420px 420px; }
 }

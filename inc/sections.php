@@ -617,3 +617,139 @@ function lr_section_access( $args = array() ) {
 	<?php
 	return ob_get_clean();
 }
+
+/**
+ * Split a block of "left|right" lines into pairs.
+ *
+ * Blank lines are dropped so an emptied row disappears instead of rendering an
+ * empty table row. A line with no pipe keeps its whole text on the left.
+ *
+ * @param string $text Raw textarea value.
+ * @return array List of array( left, right ).
+ */
+function lr_pipe_rows( $text ) {
+	$rows = array();
+
+	foreach ( preg_split( '/\r\n|\r|\n/', (string) $text ) as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			continue;
+		}
+		$parts  = array_map( 'trim', explode( '|', $line, 2 ) );
+		$rows[] = array( $parts[0], isset( $parts[1] ) ? $parts[1] : '' );
+	}
+
+	return $rows;
+}
+
+/**
+ * Brief p15 - monthly prices.
+ *
+ * Teal panel whose TOP is a wide arc, the mirror of the About block's: same
+ * 1024px trick, rounded on the top two corners instead of the bottom two.
+ *
+ * The figures are the client's own and are transcribed exactly - they are real
+ * prices in CHF, so nothing here reformats or recalculates them.
+ *
+ * @param array $args Overrides; see lr_defaults() for the keys.
+ * @return string
+ */
+function lr_section_tarifs( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'title'    => lr_opt( 'tarifs_title' ),
+			't1_title' => lr_opt( 'tarifs_t1_title' ),
+			't1_times' => lr_opt( 'tarifs_t1_times' ),
+			't1_rows'  => lr_opt( 'tarifs_t1_rows' ),
+			't2_title' => lr_opt( 'tarifs_t2_title' ),
+			't2_times' => lr_opt( 'tarifs_t2_times' ),
+			't2_rows'  => lr_opt( 'tarifs_t2_rows' ),
+			'formula'  => lr_opt( 'tarifs_formula' ),
+			'note'     => lr_opt( 'tarifs_note' ),
+			'discount' => lr_opt( 'tarifs_discount' ),
+		)
+	);
+
+	$tables = array(
+		array( $a['t1_title'], $a['t1_times'], lr_pipe_rows( $a['t1_rows'] ) ),
+		array( $a['t2_title'], $a['t2_times'], lr_pipe_rows( $a['t2_rows'] ) ),
+	);
+
+	// Nothing priced yet - render nothing rather than an empty teal slab.
+	if ( ! $tables[0][2] && ! $tables[1][2] ) {
+		return '';
+	}
+
+	$formula   = lr_pipe_rows( $a['formula'] );
+	$discounts = lr_pipe_rows( $a['discount'] );
+
+	ob_start();
+	?>
+	<section class="section-tarifs" id="tarifs">
+		<div class="section-tarifs__inner container">
+
+			<?php if ( '' !== trim( wp_strip_all_tags( $a['title'] ) ) ) : ?>
+				<h2 class="section-tarifs__title" data-animation="reveal" data-delay="100">
+					<?php echo wp_kses_post( $a['title'] ); ?>
+				</h2>
+			<?php endif; ?>
+
+			<div class="section-tarifs__tables">
+				<?php foreach ( $tables as $table ) : ?>
+					<?php
+					list( $t_title, $t_times, $t_rows ) = $table;
+					if ( ! $t_rows ) {
+						continue;
+					}
+					?>
+					<div class="tarif" data-animation="reveal" data-delay="150">
+						<p class="tarif__title"><?php echo wp_kses_post( $t_title ); ?></p>
+						<p class="tarif__times">
+							<?php foreach ( array_filter( array_map( 'trim', explode( '|', (string) $t_times ) ) ) as $slot ) : ?>
+								<span><?php echo esc_html( $slot ); ?></span>
+							<?php endforeach; ?>
+						</p>
+						<ul class="tarif__rows">
+							<?php foreach ( $t_rows as $row ) : ?>
+								<li>
+									<span class="tarif__label"><?php echo wp_kses_post( $row[0] ); ?></span>
+									<span class="tarif__price"><?php echo wp_kses_post( $row[1] ); ?></span>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				<?php endforeach; ?>
+			</div>
+
+			<?php if ( $formula ) : ?>
+				<div class="section-tarifs__formula" data-animation="reveal" data-delay="200">
+					<?php foreach ( $formula as $i => $step ) : ?>
+						<span class="formula__circle"><?php echo wp_kses_post( $step[0] ); ?></span>
+						<?php if ( '' !== $step[1] ) : ?>
+							<span class="formula__op" aria-hidden="true"><?php echo esc_html( $step[1] ); ?></span>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( '' !== trim( wp_strip_all_tags( $a['note'] ) ) ) : ?>
+				<p class="section-tarifs__note"><?php echo wp_kses_post( $a['note'] ); ?></p>
+			<?php endif; ?>
+
+			<?php if ( $discounts ) : ?>
+				<div class="section-tarifs__discounts" data-animation="reveal" data-delay="250">
+					<?php foreach ( $discounts as $d ) : ?>
+						<p class="discount">
+							<span class="discount__value"><?php echo wp_kses_post( $d[0] ); ?></span>
+							<span class="discount__label"><?php echo wp_kses_post( $d[1] ); ?></span>
+						</p>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
+		</div>
+	</section>
+	<?php
+	return ob_get_clean();
+}

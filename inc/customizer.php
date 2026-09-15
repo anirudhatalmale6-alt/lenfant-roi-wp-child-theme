@@ -77,6 +77,19 @@ Accessible en transports gr&acirc;ce &agrave; la proximit&eacute; imm&eacute;dia
 Proche de l&rsquo;autoroute, avec des <strong>places de parking</strong> d&eacute;di&eacute;es pour d&eacute;poser vos enfants en toute s&eacute;r&eacute;nit&eacute;.
 <strong>Un local des poussettes</strong> adapt&eacute; pour des trajets fluides et confortables.',
 
+		// Prices (brief p15). Figures transcribed EXACTLY from his deck - these are
+		// real CHF prices, so nothing here reformats, rounds or recalculates them.
+		'tarifs_title'         => 'Tarifs mensuels',
+		'tarifs_t1_title'      => 'Journ&eacute;e compl&egrave;te',
+		'tarifs_t1_times'      => '7:00 - 19:00',
+		'tarifs_t1_rows'       => "1 jour|CHF 613\n2 jours|CHF 1 225\n3 jours|CHF 1 838\n4 jours|CHF 2 450\n5 jours|CHF 3 063",
+		'tarifs_t2_title'      => 'Demi- journ&eacute;e',
+		'tarifs_t2_times'      => '7:00 - 13:00|13:30 - 19:00',
+		'tarifs_t2_rows'       => "1 demi-journ&eacute;e|CHF 449\n2 demi-journ&eacute;es|CHF 898\n3 demi-journ&eacute;es|CHF 1 347\n4 demi-journ&eacute;es|CHF 1 796\n5 demi-journ&eacute;es|CHF 2 245",
+		'tarifs_formula'       => "Montant journalier|X\nNombre de jours de pr&eacute;sence|X\n49 * semaines|&divide;\n12 mois|=\nMontant mensuel|+\n10 CHF Meeko App|",
+		'tarifs_note'          => '*Tarifs mensuels sur la base de 49 semaines d&rsquo;accueil paf ann&eacute;e. Les p&eacute;riodes de fermeture ne sont pas factur&eacute;es.',
+		'tarifs_discount'      => "-10%|2 enfants inscrits\n-15%|3 enfants inscrits",
+
 		// Menu panel buttons (brief: the original has Jobs / FAQ / Contact).
 		'menu_btn_1_label'     => 'Jobs',
 		'menu_btn_1_url'       => '',
@@ -341,6 +354,26 @@ function lr_customize_register( $wp_customize ) {
 		__( 'One per line. An empty line is skipped rather than leaving a stray bullet.', 'lenfant-roi-child' )
 	);
 	$text( 'access_copy', 'lr_access', __( 'Text on the right', 'lenfant-roi-child' ), 'textarea' );
+
+	/* --- prices (brief p15) ------------------------------------------------ */
+	$wp_customize->add_section(
+		'lr_tarifs',
+		array(
+			'title'       => __( 'Prices', 'lenfant-roi-child' ),
+			'description' => __( 'Each row is one line, written as label|price. Clearing all the rows removes the section.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+	$text( 'tarifs_title', 'lr_tarifs', __( 'Heading', 'lenfant-roi-child' ) );
+	$text( 'tarifs_t1_title', 'lr_tarifs', __( 'Left table - title', 'lenfant-roi-child' ) );
+	$text( 'tarifs_t1_times', 'lr_tarifs', __( 'Left table - times', 'lenfant-roi-child' ), 'text', __( 'Separate two slots with a | if there are two.', 'lenfant-roi-child' ) );
+	$text( 'tarifs_t1_rows', 'lr_tarifs', __( 'Left table - rows', 'lenfant-roi-child' ), 'textarea', __( 'One per line: label|price', 'lenfant-roi-child' ) );
+	$text( 'tarifs_t2_title', 'lr_tarifs', __( 'Right table - title', 'lenfant-roi-child' ) );
+	$text( 'tarifs_t2_times', 'lr_tarifs', __( 'Right table - times', 'lenfant-roi-child' ) );
+	$text( 'tarifs_t2_rows', 'lr_tarifs', __( 'Right table - rows', 'lenfant-roi-child' ), 'textarea', __( 'One per line: label|price', 'lenfant-roi-child' ) );
+	$text( 'tarifs_formula', 'lr_tarifs', __( 'Formula circles', 'lenfant-roi-child' ), 'textarea', __( 'One per line: text|operator that follows it. Leave the last operator empty.', 'lenfant-roi-child' ) );
+	$text( 'tarifs_note', 'lr_tarifs', __( 'Small print', 'lenfant-roi-child' ), 'textarea' );
+	$text( 'tarifs_discount', 'lr_tarifs', __( 'Discounts', 'lenfant-roi-child' ), 'textarea', __( 'One per line: value|who it applies to', 'lenfant-roi-child' ) );
 
 	/* --- menu panel buttons ----------------------------------------------- */
 	$wp_customize->add_section(

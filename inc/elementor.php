@@ -433,6 +433,114 @@ class LR_Widget_Access extends LR_Section_Widget {
 	}
 }
 
+
+/**
+ * Brief p15 - monthly prices.
+ */
+class LR_Widget_Tarifs extends LR_Section_Widget {
+
+	public function get_name() {
+		return 'lr-tarifs';
+	}
+
+	public function get_title() {
+		return __( 'Prices', 'lenfant-roi-child' );
+	}
+
+	public function get_icon() {
+		return 'eicon-price-table';
+	}
+
+	protected function register_controls() {
+		$this->start_controls_section(
+			'content',
+			array( 'label' => __( 'Prices', 'lenfant-roi-child' ) )
+		);
+
+		$rows = __( 'One per line, written as label|price.', 'lenfant-roi-child' );
+
+		$this->add_control( 'title', array(
+			'label'   => __( 'Heading', 'lenfant-roi-child' ),
+			'type'    => \Elementor\Controls_Manager::TEXT,
+			'default' => lr_opt( 'tarifs_title' ),
+		) );
+		$this->add_control( 't1_title', array(
+			'label'   => __( 'Left table - title', 'lenfant-roi-child' ),
+			'type'    => \Elementor\Controls_Manager::TEXT,
+			'default' => lr_opt( 'tarifs_t1_title' ),
+		) );
+		$this->add_control( 't1_times', array(
+			'label'       => __( 'Left table - times', 'lenfant-roi-child' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => lr_opt( 'tarifs_t1_times' ),
+			'description' => __( 'Two slots? Separate them with a |', 'lenfant-roi-child' ),
+		) );
+		$this->add_control( 't1_rows', array(
+			'label'       => __( 'Left table - rows', 'lenfant-roi-child' ),
+			'type'        => \Elementor\Controls_Manager::TEXTAREA,
+			'rows'        => 6,
+			'default'     => lr_opt( 'tarifs_t1_rows' ),
+			'description' => $rows,
+		) );
+		$this->add_control( 't2_title', array(
+			'label'   => __( 'Right table - title', 'lenfant-roi-child' ),
+			'type'    => \Elementor\Controls_Manager::TEXT,
+			'default' => lr_opt( 'tarifs_t2_title' ),
+		) );
+		$this->add_control( 't2_times', array(
+			'label'   => __( 'Right table - times', 'lenfant-roi-child' ),
+			'type'    => \Elementor\Controls_Manager::TEXT,
+			'default' => lr_opt( 'tarifs_t2_times' ),
+		) );
+		$this->add_control( 't2_rows', array(
+			'label'       => __( 'Right table - rows', 'lenfant-roi-child' ),
+			'type'        => \Elementor\Controls_Manager::TEXTAREA,
+			'rows'        => 6,
+			'default'     => lr_opt( 'tarifs_t2_rows' ),
+			'description' => $rows,
+		) );
+		$this->add_control( 'formula', array(
+			'label'       => __( 'Formula circles', 'lenfant-roi-child' ),
+			'type'        => \Elementor\Controls_Manager::TEXTAREA,
+			'rows'        => 7,
+			'default'     => lr_opt( 'tarifs_formula' ),
+			'description' => __( 'One per line: text|the operator after it. Leave the last operator empty.', 'lenfant-roi-child' ),
+		) );
+		$this->add_control( 'note', array(
+			'label'   => __( 'Small print', 'lenfant-roi-child' ),
+			'type'    => \Elementor\Controls_Manager::TEXTAREA,
+			'default' => lr_opt( 'tarifs_note' ),
+		) );
+		$this->add_control( 'discount', array(
+			'label'       => __( 'Discounts', 'lenfant-roi-child' ),
+			'type'        => \Elementor\Controls_Manager::TEXTAREA,
+			'default'     => lr_opt( 'tarifs_discount' ),
+			'description' => __( 'One per line: value|who it applies to', 'lenfant-roi-child' ),
+		) );
+
+		$this->end_controls_section();
+	}
+
+	protected function render() {
+		$s = $this->get_settings_for_display();
+
+		echo lr_section_tarifs( // phpcs:ignore WordPress.Security.EscapingOutput
+			array(
+				'title'    => $s['title'],
+				't1_title' => $s['t1_title'],
+				't1_times' => $s['t1_times'],
+				't1_rows'  => $s['t1_rows'],
+				't2_title' => $s['t2_title'],
+				't2_times' => $s['t2_times'],
+				't2_rows'  => $s['t2_rows'],
+				'formula'  => $s['formula'],
+				'note'     => $s['note'],
+				'discount' => $s['discount'],
+			)
+		);
+	}
+}
+
 /**
  * Register the widgets.
  *
@@ -444,4 +552,5 @@ function lr_elementor_widgets( $manager ) {
 	$manager->register( new LR_Widget_Quote() );
 	$manager->register( new LR_Widget_Band() );
 	$manager->register( new LR_Widget_Access() );
+	$manager->register( new LR_Widget_Tarifs() );
 }

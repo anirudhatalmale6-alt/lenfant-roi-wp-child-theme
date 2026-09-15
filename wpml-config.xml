@@ -49,6 +49,17 @@
 			<key name="access_list" />
 			<key name="access_copy" />
 
+			<key name="tarifs_title" />
+			<key name="tarifs_t1_title" />
+			<key name="tarifs_t1_times" />
+			<key name="tarifs_t1_rows" />
+			<key name="tarifs_t2_title" />
+			<key name="tarifs_t2_times" />
+			<key name="tarifs_t2_rows" />
+			<key name="tarifs_formula" />
+			<key name="tarifs_note" />
+			<key name="tarifs_discount" />
+
 			<key name="menu_btn_1_label" />
 			<key name="menu_btn_1_url" />
 			<key name="menu_btn_2_label" />
@@ -105,6 +116,20 @@
 				<field editor_type="AREA">heading</field>
 				<field editor_type="AREA">list</field>
 				<field editor_type="VISUAL">copy</field>
+			</fields>
+		</widget>
+		<widget name="lr-tarifs">
+			<fields>
+				<field editor_type="LINE">title</field>
+				<field editor_type="LINE">t1_title</field>
+				<field editor_type="LINE">t1_times</field>
+				<field editor_type="AREA">t1_rows</field>
+				<field editor_type="LINE">t2_title</field>
+				<field editor_type="LINE">t2_times</field>
+				<field editor_type="AREA">t2_rows</field>
+				<field editor_type="AREA">formula</field>
+				<field editor_type="AREA">note</field>
+				<field editor_type="AREA">discount</field>
 			</fields>
 		</widget>
 	</elementor-widgets>
