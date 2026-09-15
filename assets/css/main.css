@@ -40,7 +40,17 @@
 
 /* --- reset ---------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
-html { font-size: 62.5%; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* overflow-x: clip rather than hidden. The decorative lines and the stadium
+   outline deliberately extend past the viewport; body{overflow-x:hidden} alone
+   contains them in Chrome (verified: the page cannot be panned sideways), but
+   iOS Safari has historically still allowed a pan when only body is hidden.
+   `clip` stops the scroll without creating a scroll container, so it does not
+   disturb position:fixed or sticky the way overflow:hidden on html would.
+   Browsers without `clip` ignore the line and keep today's behaviour. */
+html {
+	font-size: 62.5%; -webkit-text-size-adjust: 100%; scroll-behavior: smooth;
+	overflow-x: clip;
+}
 body {
 	margin: 0;
 	font-family: var(--font-family-primary);
@@ -291,6 +301,19 @@ body.menu-is-open { overflow: hidden; }
 	[data-animation] { opacity: 1 !important; transform: none !important; }
 	.arabesque__line { clip-path: none !important; }
 }
+
+/* Belt and braces for the Elementor editor. main.js already reveals everything
+   when it detects edit mode, but the editor preview is an iframe that can load
+   in odd orders, and a client staring at an empty canvas is the worst possible
+   failure. These make it impossible for the content to be invisible in there,
+   whatever the JS did:
+     - entrance animations off
+     - the hero clip fully open
+     - the drawn outline complete rather than waiting to be scrolled */
+body.elementor-editor-active [data-animation] { opacity: 1 !important; transform: none !important; }
+body.elementor-editor-active .section-hero-page-home .section__media { --media-progress: 1; }
+body.elementor-editor-active .outline__shape { stroke-dasharray: none !important; }
+body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 
 /* Without JS nothing would ever get .is-inview, so everything would sit at
    opacity 0. Show the finished state instead of an empty page. */

@@ -9,11 +9,42 @@
 	var root = document.documentElement;
 	var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+	/* Inside the Elementor editor nothing may stay hidden waiting to be scrolled
+	   into view: the preview is an iframe that does not scroll the way the real
+	   page does, and every edit re-renders the widget into fresh DOM nodes that
+	   the observer set up at page load has never seen. Either way the content
+	   would sit at opacity 0 and the client sees an empty canvas - which is
+	   exactly what happened. In the editor we simply show everything. */
+	function inEditor() {
+		return !!(
+			( window.elementorFrontend && elementorFrontend.isEditMode && elementorFrontend.isEditMode() ) ||
+			document.body.classList.contains( 'elementor-editor-active' )
+		);
+	}
+
+	function revealAll( scope ) {
+		var els = ( scope || document ).querySelectorAll( '[data-animation]' );
+		Array.prototype.forEach.call( els, function ( el ) { el.classList.add( 'is-inview' ); } );
+
+		var lines = ( scope || document ).querySelectorAll( '.arabesque' );
+		Array.prototype.forEach.call( lines, function ( el ) { el.classList.add( 'is-inview' ); } );
+
+		var shapes = ( scope || document ).querySelectorAll( '.outline__shape' );
+		Array.prototype.forEach.call( shapes, function ( el ) { el.style.strokeDasharray = 'none'; } );
+	}
+
 	/* --- 1. scroll-linked hero media -------------------------------------- */
 	var media = document.querySelector('.section-hero-page-home .section__media');
 
 	function updateMedia() {
 		if (!media) return;
+		/* In the editor the inline style would win over the stylesheet's
+		   editor override, so set it open here rather than leaving the photo
+		   clipped to a sliver on his canvas. */
+		if (inEditor()) {
+			media.style.setProperty('--media-progress', '1');
+			return;
+		}
 		var rect = media.getBoundingClientRect();
 		/* Progress runs 0 -> 1 as the block travels up the viewport.
 		   The two ratios are measured off the original: the circle is still
@@ -58,7 +89,7 @@
 	function initArabesque() {
 		var blocks = document.querySelectorAll('.arabesque');
 		if (!blocks.length) return;
-		if (reduced || !('IntersectionObserver' in window)) {
+		if (inEditor() || reduced || !('IntersectionObserver' in window)) {
 			Array.prototype.forEach.call(blocks, function (el) { el.classList.add('is-inview'); });
 			return;
 		}
@@ -73,7 +104,7 @@
 	/* --- 2. in-view entrance ---------------------------------------------- */
 	function initInView() {
 		var targets = document.querySelectorAll('[data-animation]');
-		if (reduced || !('IntersectionObserver' in window)) {
+		if (inEditor() || reduced || !('IntersectionObserver' in window)) {
 			Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-inview'); });
 			document.body.classList.add('is-inview');
 			return;
@@ -167,12 +198,44 @@
 	initArabesque();
 	initInView();
 	updateMedia();
-	/* Reduced motion: draw them once, complete, rather than tying them to scroll. */
-	if (reduced) {
+	/* Reduced motion, and the editor: draw them once, complete, rather than
+	   tying them to scroll. */
+	if (reduced || inEditor()) {
 		Array.prototype.forEach.call(outlines, function (s) { s.style.strokeDasharray = 'none'; });
 	} else {
 		updateOutlines();
 	}
+	/* Editor state is applied at every point it could become knowable, because
+	   the order is not guaranteed: this script runs in the footer, Elementor's
+	   own frontend script loads after it, and the body class may be present
+	   from the server or not. Re-applying is cheap and idempotent; getting it
+	   wrong leaves the client staring at a blank canvas. */
+	function applyEditorState() {
+		if (!inEditor()) return;
+		if (media) media.style.setProperty('--media-progress', '1');
+		revealAll();
+	}
+
+	applyEditorState();
+	document.addEventListener('DOMContentLoaded', applyEditorState);
+	window.addEventListener('load', applyEditorState);
+
 	window.addEventListener('scroll', onScroll, { passive: true });
 	window.addEventListener('resize', onScroll, { passive: true });
+
+	/* Every edit re-renders a widget into brand new nodes. This fires for each
+	   one, so the replacements get revealed too instead of vanishing the moment
+	   he changes a word. */
+	window.addEventListener('elementor/frontend/init', applyEditorState);
+
+	if (window.elementorFrontend && elementorFrontend.hooks) {
+		elementorFrontend.hooks.addAction('frontend/element_ready/global', function ($scope) {
+			applyEditorState();
+			var el = $scope && $scope[0] ? $scope[0] : null;
+			if (!el) return;
+			if (inEditor()) {
+				revealAll(el);
+			}
+		});
+	}
 })();
