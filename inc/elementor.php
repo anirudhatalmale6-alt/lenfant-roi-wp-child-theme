@@ -306,11 +306,21 @@ class LR_Widget_Band extends LR_Section_Widget {
 			)
 		);
 		$this->add_control(
-			'icon_image',
+			'icon_preset',
 			array(
 				'label'       => __( 'Icon', 'lenfant-roi-child' ),
+				'type'        => \Elementor\Controls_Manager::SELECT,
+				'default'     => 'icon-clock.png',
+				'options'     => lr_icon_choices(),
+				'description' => __( 'The icons that came with the design.', 'lenfant-roi-child' ),
+			)
+		);
+		$this->add_control(
+			'icon_image',
+			array(
+				'label'       => __( 'Or upload your own', 'lenfant-roi-child' ),
 				'type'        => \Elementor\Controls_Manager::MEDIA,
-				'description' => __( 'A PNG with a transparent background. Leave empty for no icon.', 'lenfant-roi-child' ),
+				'description' => __( 'A PNG with a transparent background. Overrides the one above.', 'lenfant-roi-child' ),
 			)
 		);
 		$this->add_control(
@@ -348,6 +358,7 @@ class LR_Widget_Band extends LR_Section_Widget {
 			array(
 				'side'     => $s['side'],
 				'label'    => $s['label'],
+				'icon'     => isset( $s['icon_preset'] ) ? $s['icon_preset'] : '',
 				'icon_url' => isset( $s['icon_image']['url'] ) ? $s['icon_image']['url'] : '',
 				'heading'  => $s['heading'],
 				'value'    => $s['value'],

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LR_VERSION', '1.11.0' );
+define( 'LR_VERSION', '1.12.1' );
 
 require_once get_stylesheet_directory() . '/inc/svg.php';
 require_once get_stylesheet_directory() . '/inc/customizer.php';
@@ -59,6 +59,30 @@ function lr_elementor_boot( $manager ) {
 	require_once get_stylesheet_directory() . '/inc/elementor.php';
 	lr_elementor_widgets( $manager );
 }
+
+/**
+ * Drop Elementor's rendered-HTML cache whenever the theme version changes.
+ *
+ * Elementor stores each element's rendered output in _elementor_element_cache.
+ * Because these widgets render from theme PHP, shipping a change to a section
+ * does NOT invalidate that cache - the page keeps serving the old markup and
+ * the update looks like it never deployed. Cost me a confused half hour; would
+ * cost the client the same, except he would reasonably assume I had not done
+ * the work.
+ *
+ * Runs only when LR_VERSION has moved, so it is one query per release.
+ */
+function lr_flush_elementor_cache() {
+	if ( get_option( 'lr_cached_version' ) === LR_VERSION ) {
+		return;
+	}
+
+	global $wpdb;
+	$wpdb->delete( $wpdb->postmeta, array( 'meta_key' => '_elementor_element_cache' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+
+	update_option( 'lr_cached_version', LR_VERSION );
+}
+add_action( 'init', 'lr_flush_elementor_cache' );
 
 /**
  * Theme supports and menu locations.

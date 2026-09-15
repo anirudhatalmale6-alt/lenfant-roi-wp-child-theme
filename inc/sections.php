@@ -462,6 +462,29 @@ function lr_section_band( $args ) {
 }
 
 /**
+ * The icons shipped with the theme, for the Elementor dropdown.
+ *
+ * Kept here rather than in the widget so the list has one home and the file
+ * names are not repeated in two places.
+ *
+ * @return array filename => label
+ */
+function lr_icon_choices() {
+	return array(
+		''                      => __( 'None', 'lenfant-roi-child' ),
+		'icon-clock.png'        => __( 'Clock', 'lenfant-roi-child' ),
+		'icon-calendar.png'     => __( 'Calendar', 'lenfant-roi-child' ),
+		'icon-handshake.png'    => __( 'Handshake', 'lenfant-roi-child' ),
+		'icon-globe-circle.png' => __( 'Globe', 'lenfant-roi-child' ),
+		'icon-tick-circle.png'  => __( 'Tick', 'lenfant-roi-child' ),
+		'icon-chef-circle.png'  => __( 'Chef', 'lenfant-roi-child' ),
+		'icon-bus.png'          => __( 'Bus', 'lenfant-roi-child' ),
+		'icon-car.png'          => __( 'Car', 'lenfant-roi-child' ),
+		'icon-badge.png'        => __( 'Swiss quality badge', 'lenfant-roi-child' ),
+	);
+}
+
+/**
  * Brief p7 - opening hours.
  *
  * @return string
