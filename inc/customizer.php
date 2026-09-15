@@ -77,6 +77,13 @@ Accessible en transports gr&acirc;ce &agrave; la proximit&eacute; imm&eacute;dia
 Proche de l&rsquo;autoroute, avec des <strong>places de parking</strong> d&eacute;di&eacute;es pour d&eacute;poser vos enfants en toute s&eacute;r&eacute;nit&eacute;.
 <strong>Un local des poussettes</strong> adapt&eacute; pour des trajets fluides et confortables.',
 
+		// Google reviews (brief p5). The rating and cards come from his plugin;
+		// this only frames them.
+		'reviews_image'        => '',
+		'reviews_shortcode'    => '',
+		'reviews_card'         => true,
+		'access_card'          => true,
+
 		// Prices (brief p15). Figures transcribed EXACTLY from his deck - these are
 		// real CHF prices, so nothing here reformats, rounds or recalculates them.
 		'tarifs_title'         => 'Tarifs mensuels',
@@ -354,6 +361,46 @@ function lr_customize_register( $wp_customize ) {
 		__( 'One per line. An empty line is skipped rather than leaving a stray bullet.', 'lenfant-roi-child' )
 	);
 	$text( 'access_copy', 'lr_access', __( 'Text on the right', 'lenfant-roi-child' ), 'textarea' );
+
+	/* --- google reviews (brief p5) ---------------------------------------- */
+	$wp_customize->add_section(
+		'lr_reviews',
+		array(
+			'title'       => __( 'Google reviews', 'lenfant-roi-child' ),
+			'description' => __( 'Paste the shortcode from the reviews plugin. Nothing shows until your client has connected their Google account to it.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+	$wp_customize->add_setting( 'reviews_image', array( 'default' => '', 'sanitize_callback' => 'absint' ) );
+	$wp_customize->add_control(
+		new WP_Customize_Media_Control(
+			$wp_customize,
+			'reviews_image',
+			array(
+				'label'     => __( 'Photo above the reviews', 'lenfant-roi-child' ),
+				'section'   => 'lr_reviews',
+				'mime_type' => 'image',
+			)
+		)
+	);
+	$wp_customize->add_setting(
+		'reviews_shortcode',
+		array(
+			'default'           => '',
+			// Deliberately NOT wp_kses_post: a shortcode is not markup and kses
+			// would mangle the attribute quotes.
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
+	$wp_customize->add_control(
+		'reviews_shortcode',
+		array(
+			'label'       => __( 'Reviews plugin shortcode', 'lenfant-roi-child' ),
+			'description' => __( 'Something like [trustindex data-widget-id=xxxx]', 'lenfant-roi-child' ),
+			'section'     => 'lr_reviews',
+			'type'        => 'text',
+		)
+	);
 
 	/* --- prices (brief p15) ------------------------------------------------ */
 	$wp_customize->add_section(

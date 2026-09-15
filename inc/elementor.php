@@ -426,6 +426,16 @@ class LR_Widget_Access extends LR_Section_Widget {
 				'default' => wpautop( lr_opt( 'access_copy' ) ),
 			)
 		);
+		$this->add_control(
+			'card',
+			array(
+				'label'        => __( 'White card on teal', 'lenfant-roi-child' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'description'  => __( 'Stacks into one panel with the carded section above.', 'lenfant-roi-child' ),
+				'return_value' => 'yes',
+			)
+		);
 
 		$this->end_controls_section();
 	}
@@ -439,11 +449,79 @@ class LR_Widget_Access extends LR_Section_Widget {
 				'heading'   => $s['heading'],
 				'list'      => $s['list'],
 				'copy'      => $s['copy'],
+				'card'      => 'yes' === $s['card'],
 			)
 		);
 	}
 }
 
+
+
+/**
+ * Brief p5 - Google reviews.
+ */
+class LR_Widget_Reviews extends LR_Section_Widget {
+
+	public function get_name() {
+		return 'lr-reviews';
+	}
+
+	public function get_title() {
+		return __( 'Google reviews', 'lenfant-roi-child' );
+	}
+
+	public function get_icon() {
+		return 'eicon-review';
+	}
+
+	protected function register_controls() {
+		$this->start_controls_section(
+			'content',
+			array( 'label' => __( 'Google reviews', 'lenfant-roi-child' ) )
+		);
+
+		$this->add_control(
+			'image',
+			array(
+				'label' => __( 'Photo above the reviews', 'lenfant-roi-child' ),
+				'type'  => \Elementor\Controls_Manager::MEDIA,
+			)
+		);
+		$this->add_control(
+			'shortcode',
+			array(
+				'label'       => __( 'Reviews plugin shortcode', 'lenfant-roi-child' ),
+				'type'        => \Elementor\Controls_Manager::TEXT,
+				'default'     => lr_opt( 'reviews_shortcode' ),
+				'description' => __( 'From the reviews plugin, e.g. [trustindex data-widget-id=xxxx]. Nothing shows until your client connects their Google account.', 'lenfant-roi-child' ),
+			)
+		);
+		$this->add_control(
+			'card',
+			array(
+				'label'        => __( 'White card on teal', 'lenfant-roi-child' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'description'  => __( 'Stacks into one panel with the next carded section.', 'lenfant-roi-child' ),
+				'return_value' => 'yes',
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function render() {
+		$s = $this->get_settings_for_display();
+
+		echo lr_section_reviews( // phpcs:ignore WordPress.Security.EscapingOutput
+			array(
+				'image_url' => isset( $s['image']['url'] ) ? $s['image']['url'] : '',
+				'shortcode' => $s['shortcode'],
+				'card'      => 'yes' === $s['card'],
+			)
+		);
+	}
+}
 
 /**
  * Brief p15 - monthly prices.
@@ -564,4 +642,5 @@ function lr_elementor_widgets( $manager ) {
 	$manager->register( new LR_Widget_Band() );
 	$manager->register( new LR_Widget_Access() );
 	$manager->register( new LR_Widget_Tarifs() );
+	$manager->register( new LR_Widget_Reviews() );
 }

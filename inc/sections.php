@@ -564,6 +564,7 @@ function lr_section_access( $args = array() ) {
 			'heading'   => lr_opt( 'access_heading' ),
 			'list'      => lr_opt( 'access_list' ),
 			'copy'      => lr_opt( 'access_copy' ),
+			'card'      => lr_opt( 'access_card' ),
 		)
 	);
 
@@ -591,9 +592,10 @@ function lr_section_access( $args = array() ) {
 
 	ob_start();
 	?>
-	<section class="section-access" id="acces">
+	<section class="section-access<?php echo $a['card'] ? ' section--card' : ''; ?>" id="acces">
 		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
+		<div class="card__inner">
 		<div class="section-access__inner container">
 
 			<?php if ( $photo ) : ?>
@@ -771,6 +773,77 @@ function lr_section_tarifs( $args = array() ) {
 				</div>
 			<?php endif; ?>
 
+		</div>
+	</section>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Brief p5 - the Google reviews block.
+ *
+ * The rating and the review cards come from his plugin ("Widgets for Google
+ * Reviews"), which needs his client's own Google account connected before it
+ * renders anything. This section is the frame around it: the photo in its pill
+ * and a slot the plugin's shortcode drops into. If no shortcode is set yet the
+ * slot is simply absent rather than printing an error.
+ *
+ * @param array $args Overrides; see lr_defaults().
+ * @return string
+ */
+function lr_section_reviews( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'image_url' => '',
+			'shortcode' => lr_opt( 'reviews_shortcode' ),
+			'card'      => lr_opt( 'reviews_card' ),
+		)
+	);
+
+	$photo = $a['image_url'];
+	if ( ! $photo ) {
+		$id    = (int) lr_opt( 'reviews_image' );
+		$photo = $id ? wp_get_attachment_image_url( $id, 'full' ) : '';
+	}
+
+	$shortcode = trim( (string) $a['shortcode'] );
+
+	if ( ! $photo && '' === $shortcode ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<section class="section-reviews<?php echo $a['card'] ? ' section--card' : ''; ?>" id="avis">
+		<div class="card__inner">
+			<div class="container">
+
+				<?php if ( $photo ) : ?>
+					<figure class="section-reviews__media" data-animation="reveal" data-delay="100">
+						<img src="<?php echo esc_url( $photo ); ?>" alt="" loading="lazy" decoding="async">
+					</figure>
+				<?php endif; ?>
+
+				<?php
+				// If the plugin is deactivated or the shortcode is mistyped,
+				// do_shortcode() hands the text straight back and WordPress
+				// would print "[trustindex ...]" on the page for parents to
+				// read. Compare the result: unchanged means it did not run.
+				$rendered = '' !== $shortcode ? do_shortcode( $shortcode ) : '';
+				$resolved = ( '' !== $rendered && trim( $rendered ) !== trim( $shortcode ) );
+				?>
+				<?php if ( $resolved ) : ?>
+					<div class="section-reviews__widget" data-animation="reveal" data-delay="150">
+						<?php echo $rendered; // phpcs:ignore WordPress.Security.EscapingOutput ?>
+					</div>
+				<?php elseif ( '' !== $shortcode && current_user_can( 'edit_theme_options' ) ) : ?>
+					<p class="section-reviews__notice">
+						<?php esc_html_e( 'The reviews shortcode did not produce anything - check the plugin is active and the shortcode is correct. Only you can see this message.', 'lenfant-roi-child' ); ?>
+					</p>
+				<?php endif; ?>
+
+			</div>
 		</div>
 	</section>
 	<?php

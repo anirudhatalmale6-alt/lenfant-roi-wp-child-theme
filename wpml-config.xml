@@ -49,6 +49,8 @@
 			<key name="access_list" />
 			<key name="access_copy" />
 
+			<key name="reviews_shortcode" />
+
 			<key name="tarifs_title" />
 			<key name="tarifs_t1_title" />
 			<key name="tarifs_t1_times" />
@@ -130,6 +132,11 @@
 				<field editor_type="AREA">formula</field>
 				<field editor_type="AREA">note</field>
 				<field editor_type="AREA">discount</field>
+			</fields>
+		</widget>
+		<widget name="lr-reviews">
+			<fields>
+				<field editor_type="LINE">shortcode</field>
 			</fields>
 		</widget>
 	</elementor-widgets>
