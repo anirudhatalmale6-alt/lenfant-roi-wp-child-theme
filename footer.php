@@ -26,6 +26,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 <?php endif; ?>
 
+<?php
+// Brief p1: "we want it on the bottom of the page, always". Rendered at the
+// foot rather than pinned to the viewport - a fixed bar eats a third of a
+// phone screen, and he asked me to choose.
+$lr_slogan = lr_opt( 'slogan_title' );
+$lr_since  = lr_opt( 'slogan_since' );
+if ( '' !== trim( wp_strip_all_tags( (string) $lr_slogan . (string) $lr_since ) ) ) :
+	?>
+	<div class="slogan">
+		<div class="container">
+			<?php if ( '' !== trim( wp_strip_all_tags( (string) $lr_slogan ) ) ) : ?>
+				<p class="slogan__title"><?php echo wp_kses_post( $lr_slogan ); ?></p>
+			<?php endif; ?>
+			<?php if ( '' !== trim( wp_strip_all_tags( (string) $lr_since ) ) ) : ?>
+				<p class="slogan__since"><span><?php echo wp_kses_post( $lr_since ); ?></span></p>
+			<?php endif; ?>
+		</div>
+	</div>
+<?php endif; ?>
+
 <?php wp_footer(); ?>
 </body>
 </html>

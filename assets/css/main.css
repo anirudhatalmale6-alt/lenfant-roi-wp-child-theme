@@ -743,6 +743,64 @@ body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 }
 .section-access__copy p + p { margin-top: 1.2rem; }
 
+/* --- p1: the opening logo ------------------------------------------------- */
+/* Covers the page, then slides aside towards the header's logo position so it
+   reads as the logo taking its place rather than a curtain simply lifting. */
+.splash {
+	position: fixed; inset: 0; z-index: 90;
+	display: grid; place-items: center;
+	background: var(--color-light);
+	transition: opacity .8s ease, visibility .8s ease;
+	cursor: pointer;
+}
+.splash__logo {
+	width: min(420px, 62vw);
+	transition: transform .9s cubic-bezier(.65,0,.35,1), opacity .7s ease;
+}
+.splash__logo svg,
+.splash__logo img { width: 100%; height: auto; }
+
+.splash.is-done { opacity: 0; visibility: hidden; }
+/* Towards the top-left, where the header logo sits. Scaled to roughly the
+   header logo's width (165px) so the two read as the same mark. */
+.splash.is-done .splash__logo {
+	transform: translate(calc(-50vw + 14rem), calc(-50vh + 5rem)) scale(.4);
+	opacity: 0;
+}
+/* No scrolling underneath while it is up. */
+body.splash-is-open { overflow: hidden; }
+
+/* --- p1: the slogan at the foot of every page ----------------------------- */
+/* "we want it on the bottom of the page, always" - at the foot, not pinned to
+   the viewport. A fixed bar eats a third of a phone screen and people try to
+   close it; he asked me to decide and that was the call. */
+.slogan {
+	padding-block: clamp(3.5rem, 6vw, 7rem);
+	text-align: center;
+	background: var(--color-light);
+}
+.slogan__title {
+	font-family: var(--font-family-secondary);
+	font-size: clamp(2rem, 3.4vw, 4rem);
+	line-height: 1.2;
+	color: var(--color-primary);
+}
+/* The rules either side of "Depuis 10 ans" on the slide. */
+.slogan__since {
+	margin-top: clamp(1rem, 1.6vw, 1.6rem);
+	display: flex; align-items: center; justify-content: center;
+	gap: clamp(1rem, 2vw, 2rem);
+	font-family: var(--font-family-secondary);
+	font-size: clamp(1.5rem, 2vw, 2.2rem);
+	text-transform: uppercase; letter-spacing: .06em;
+}
+.slogan__since::before,
+.slogan__since::after {
+	content: ''; display: block;
+	width: clamp(40px, 7vw, 90px); height: 1px;
+	background: var(--color-tertiary);
+}
+
 /* --- p10: the four icons -------------------------------------------------- */
 .section-family { position: relative; padding-block: clamp(4rem, 7vw, 9rem); }
 .section-family__inner {

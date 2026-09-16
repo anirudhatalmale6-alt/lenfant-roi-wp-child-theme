@@ -27,6 +27,27 @@ $lr_logo_id = (int) get_theme_mod( 'logo_svg_replace', 0 );
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
+<?php
+// Brief p1: the logo sits centred over the page and slides aside after two
+// seconds. Rendered before everything so it covers the page from first paint -
+// injecting it later would let the page flash first, which is the opposite of
+// the effect. hidden by default so a visitor without JS never sees it at all.
+if ( lr_opt( 'splash_show' ) ) :
+	$lr_splash_logo = (int) get_theme_mod( 'logo_svg_replace', 0 );
+	?>
+	<div class="splash" id="lr-splash" data-hold="<?php echo esc_attr( (int) lr_opt( 'splash_seconds' ) ); ?>"<?php echo lr_opt( 'splash_once' ) ? ' data-once' : ''; ?> hidden>
+		<div class="splash__logo">
+			<?php
+			if ( $lr_splash_logo ) {
+				echo wp_get_attachment_image( $lr_splash_logo, 'full', false, array( 'alt' => get_bloginfo( 'name' ) ) );
+			} else {
+				lr_the_svg( 'logo' );
+			}
+			?>
+		</div>
+	</div>
+<?php endif; ?>
+
 <a class="skip-link visually-hidden" href="#content"><?php esc_html_e( 'Skip to content', 'lenfant-roi-child' ); ?></a>
 
 <header class="page__header">

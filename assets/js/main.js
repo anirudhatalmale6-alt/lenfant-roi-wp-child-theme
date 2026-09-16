@@ -33,6 +33,43 @@
 		Array.prototype.forEach.call( shapes, function ( el ) { el.style.strokeDasharray = 'none'; } );
 	}
 
+	/* --- 0. the opening logo ---------------------------------------------- */
+	/* Brief p1. The markup ships [hidden]; this reveals it, waits, then slides
+	   it aside. Doing it that way round means a visitor with JS off, or one who
+	   arrives before the script runs, simply never sees a splash rather than
+	   being stuck behind a logo that never leaves. */
+	function initSplash() {
+		var splash = document.getElementById('lr-splash');
+		if (!splash) return;
+
+		/* Nothing should cover the canvas while he is editing. */
+		if (inEditor()) { splash.remove(); return; }
+
+		var once = splash.hasAttribute('data-once');
+		if (once && sessionStorage.getItem('lr-splash-seen')) { splash.remove(); return; }
+
+		/* Reduced motion: skip the whole thing rather than flash it. */
+		if (reduced) { splash.remove(); return; }
+
+		var hold = parseInt(splash.getAttribute('data-hold') || '2', 10);
+		hold = Math.max(1, Math.min(6, hold)) * 1000;
+
+		splash.hidden = false;
+		document.body.classList.add('splash-is-open');
+
+		function dismiss() {
+			splash.classList.add('is-done');
+			document.body.classList.remove('splash-is-open');
+			try { sessionStorage.setItem('lr-splash-seen', '1'); } catch (e) {}
+			setTimeout(function () { splash.remove(); }, 1100);
+		}
+
+		var timer = setTimeout(dismiss, hold);
+		/* Let someone skip it - being held hostage by an animation is the
+		   fastest way to lose a visitor. */
+		splash.addEventListener('click', function () { clearTimeout(timer); dismiss(); });
+	}
+
 	/* --- 1. scroll-linked hero media -------------------------------------- */
 	var media = document.querySelector('.section-hero-page-home .section__media');
 
@@ -335,6 +372,7 @@
 		revealAll();
 	}
 
+	initSplash();
 	applyEditorState();
 	initPanels();
 	joinCards();

@@ -77,6 +77,13 @@ Accessible en transports gr&acirc;ce &agrave; la proximit&eacute; imm&eacute;dia
 Proche de l&rsquo;autoroute, avec des <strong>places de parking</strong> d&eacute;di&eacute;es pour d&eacute;poser vos enfants en toute s&eacute;r&eacute;nit&eacute;.
 <strong>Un local des poussettes</strong> adapt&eacute; pour des trajets fluides et confortables.',
 
+		// Opening splash + slogan (brief p1).
+		'splash_show'          => true,
+		'splash_seconds'       => 2,
+		'splash_once'          => true,
+		'slogan_title'         => 'S&eacute;r&eacute;nit&eacute;.Bilinguisme.Excellence.',
+		'slogan_since'         => 'Depuis 10 ans',
+
 		// The four things (brief p10). Each line: label|icon|panel it opens.
 		'family_copy'          => 'Parce que le bien-&ecirc;tre de votre enfant va de pair avec le v&ocirc;tre, nous avons imagin&eacute; un accompagnement qui r&eacute;pond aux besoins de toute la famille.',
 		'family_items'         => "Bilinguisme|icon-globe-circle.png|bilinguisme\nTout inclus|icon-tick-circle.png|tout-inclus\nApp Famille|icon-badge.png|app-famille\nAlimentation adapt&eacute;e|icon-chef-circle.png|alimentation",
@@ -365,6 +372,64 @@ function lr_customize_register( $wp_customize ) {
 		__( 'One per line. An empty line is skipped rather than leaving a stray bullet.', 'lenfant-roi-child' )
 	);
 	$text( 'access_copy', 'lr_access', __( 'Text on the right', 'lenfant-roi-child' ), 'textarea' );
+
+	/* --- opening splash + slogan (brief p1) -------------------------------- */
+	$wp_customize->add_section(
+		'lr_splash',
+		array(
+			'title'       => __( 'Opening logo & slogan', 'lenfant-roi-child' ),
+			'description' => __( 'The logo that covers the page and slides aside, and the slogan at the foot of every page. The logo used is the one from the Header panel.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+
+	$lr_toggle = function ( $id, $label, $desc = '' ) use ( $wp_customize, $defaults ) {
+		$wp_customize->add_setting(
+			$id,
+			array(
+				'default'           => isset( $defaults[ $id ] ) ? $defaults[ $id ] : false,
+				'sanitize_callback' => function ( $v ) {
+					return (bool) $v;
+				},
+			)
+		);
+		$wp_customize->add_control(
+			$id,
+			array(
+				'label'       => $label,
+				'description' => $desc,
+				'section'     => 'lr_splash',
+				'type'        => 'checkbox',
+			)
+		);
+	};
+
+	$lr_toggle( 'splash_show', __( 'Show the opening logo', 'lenfant-roi-child' ) );
+	$lr_toggle(
+		'splash_once',
+		__( 'Only once per visit', 'lenfant-roi-child' ),
+		__( 'Recommended. Unticked, it plays on every single page load, which gets tiresome fast.', 'lenfant-roi-child' )
+	);
+
+	$wp_customize->add_setting(
+		'splash_seconds',
+		array(
+			'default'           => 2,
+			'sanitize_callback' => 'absint',
+		)
+	);
+	$wp_customize->add_control(
+		'splash_seconds',
+		array(
+			'label'       => __( 'Seconds before it slides away', 'lenfant-roi-child' ),
+			'section'     => 'lr_splash',
+			'type'        => 'number',
+			'input_attrs' => array( 'min' => 1, 'max' => 6, 'step' => 1 ),
+		)
+	);
+
+	$text( 'slogan_title', 'lr_splash', __( 'Slogan', 'lenfant-roi-child' ) );
+	$text( 'slogan_since', 'lr_splash', __( 'Line under the slogan', 'lenfant-roi-child' ) );
 
 	/* --- the four things (brief p10) --------------------------------------- */
 	$wp_customize->add_section(
