@@ -315,7 +315,15 @@ body.elementor-editor-active .section-hero-page-home .section__media { --media-p
 body.elementor-editor-active .outline__shape { stroke-dasharray: none !important; }
 body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 /* The collapsible panels (brief 11-14) must never be collapsed on his canvas -
-   he cannot edit what has zero height. */
+   he cannot edit what has zero height.
+   Both halves are needed and I shipped only the second one first: [hidden] is
+   display:none, so lifting max-height on its own changed nothing and Elementor
+   drew its empty-widget placeholder instead - four grey strips. Un-hiding is
+   not the same as un-collapsing. */
+body.elementor-editor-active .section-band--panel[hidden] {
+	display: block !important;
+}
+
 body.elementor-editor-active .section-band--panel,
 body.elementor-editor-active .section-band--panel:not(.is-open) {
 	max-height: none;

@@ -14,6 +14,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * True while Elementor is rendering the editor's preview iframe.
+ *
+ * Used by the collapsible panels (brief 11-14). They ship with [hidden] so a
+ * visitor only sees one when the matching icon is clicked - but inside the
+ * editor that leaves the client with four empty grey strips he cannot click
+ * into or edit. Deciding this in PHP rather than in JS matters: the CSS and the
+ * script can only correct the markup AFTER it exists, and Elementor's canvas
+ * re-renders a widget on every keystroke. Never emitting [hidden] in the first
+ * place is the only version that cannot be raced.
+ *
+ * @return bool
+ */
+function lr_in_elementor_editor() {
+	if ( ! class_exists( '\Elementor\Plugin' ) || ! isset( \Elementor\Plugin::$instance ) ) {
+		return false;
+	}
+
+	$lr_p = \Elementor\Plugin::$instance;
+
+	// Two different objects answer this, and which one is authoritative depends
+	// on the request: the editor page itself is "edit mode", while the canvas he
+	// actually looks at is a separate iframe request that is "preview mode".
+	// Asking only one of them would work in testing and fail on his screen.
+	if ( isset( $lr_p->preview ) && method_exists( $lr_p->preview, 'is_preview_mode' ) && $lr_p->preview->is_preview_mode() ) {
+		return true;
+	}
+
+	return isset( $lr_p->editor ) && method_exists( $lr_p->editor, 'is_edit_mode' ) && $lr_p->editor->is_edit_mode();
+}
+
+/**
  * The gold stadium outline that draws itself as the block scrolls in.
  *
  * Copied from the original's CSR block rather than approximated: one <rect>
@@ -419,9 +450,27 @@ function lr_section_band( $args ) {
 	// icon on page 10 opens it. Without JS it is simply open, so the content is
 	// never unreachable.
 	$lr_panel = $a['panel'] ? sanitize_title( $a['panel'] ) : '';
+
+	// On the client's editing canvas a panel is drawn open and stays open: it is
+	// a section he has to be able to read and type into. Only the live page
+	// collapses them.
+	$lr_edit = $lr_panel && lr_in_elementor_editor();
+
+	$lr_classes = 'section-band section-band--' . $side;
+	if ( $lr_panel ) {
+		$lr_classes .= ' section-band--panel';
+	}
+	if ( $lr_edit ) {
+		$lr_classes .= ' is-open';
+	}
+
+	if ( $lr_panel ) {
+		$lr_attrs = ' id="' . esc_attr( $lr_panel ) . '" data-panel' . ( $lr_edit ? '' : ' hidden' );
+	} else {
+		$lr_attrs = $a['id'] ? ' id="' . esc_attr( $a['id'] ) . '"' : '';
+	}
 	?>
-	<section class="section-band section-band--<?php echo esc_attr( $side ); ?><?php echo $lr_panel ? ' section-band--panel' : ''; ?>"
-		<?php echo $lr_panel ? ' id="' . esc_attr( $lr_panel ) . '" data-panel hidden' : ( $a['id'] ? ' id="' . esc_attr( $a['id'] ) . '"' : '' ); ?>>
+	<section class="<?php echo esc_attr( $lr_classes ); ?>"<?php echo $lr_attrs; // phpcs:ignore WordPress.Security.EscapingOutput ?>>
 
 		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 

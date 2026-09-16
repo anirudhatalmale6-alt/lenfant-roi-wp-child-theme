@@ -189,7 +189,30 @@
 	   unreachable there. Without JS the panels have no [hidden] applied by this
 	   code and stay visible, so the content is never lost. */
 	function initPanels() {
+		/* This runs BEFORE the early return below, and that ordering is the whole
+		   point. A page can carry the panels without carrying the icon row that
+		   opens them - they are separate widgets and he inserts them separately.
+		   When that happened the function returned before ever reaching the
+		   un-hide, so on his canvas the four panels stayed [hidden] and Elementor
+		   drew its empty-widget placeholder: four grey strips. */
+		if (inEditor()) {
+			openPanelsForEditing();
+		}
+
 		var buttons = document.querySelectorAll('.family__btn[data-opens]');
+
+		/* A panel that no icon points at can never be opened, so leaving it
+		   [hidden] would quietly delete that content from the live page. Show it
+		   as an ordinary section instead. This covers the page being built up in
+		   pieces, and an icon whose panel id has been mistyped. */
+		var targeted = {};
+		Array.prototype.forEach.call(buttons, function (b) { targeted[b.getAttribute('data-opens')] = true; });
+		Array.prototype.forEach.call(document.querySelectorAll('[data-panel]'), function (p) {
+			if (targeted[p.id]) return;
+			p.hidden = false;
+			p.classList.add('is-open');
+		});
+
 		if (!buttons.length) return;
 
 		function panelFor(id) { return document.getElementById(id); }
@@ -236,16 +259,16 @@
 			});
 		});
 
-		if (inEditor()) {
-			/* In the editor he needs to SEE the panels to edit them. Removing
-			   [hidden] is not enough on its own: the collapse is done with
-			   max-height, so without .is-open they unhide to zero height and
-			   show as thin grey strips - which is exactly what he reported. */
-			Array.prototype.forEach.call(document.querySelectorAll('[data-panel]'), function (p) {
-				p.hidden = false;
-				p.classList.add('is-open');
-			});
-		}
+	}
+
+	/* In the editor he needs to SEE the panels to edit them. Removing [hidden]
+	   is not enough on its own: the collapse is done with max-height, so
+	   without .is-open they unhide to zero height and show as thin strips. */
+	function openPanelsForEditing() {
+		Array.prototype.forEach.call(document.querySelectorAll('[data-panel]'), function (p) {
+			p.hidden = false;
+			p.classList.add('is-open');
+		});
 	}
 
 	/* --- 1b. arabesque blocks only run while they are on screen ------------ */
@@ -380,6 +403,7 @@
 		if (!inEditor()) return;
 		if (media) media.style.setProperty('--media-progress', '1');
 		revealAll();
+		openPanelsForEditing();
 	}
 
 	initSplash();
@@ -397,9 +421,16 @@
 	/* Every edit re-renders a widget into brand new nodes. This fires for each
 	   one, so the replacements get revealed too instead of vanishing the moment
 	   he changes a word. */
-	window.addEventListener('elementor/frontend/init', applyEditorState);
+	/* This script is enqueued in the footer and Elementor's own frontend script
+	   loads after it, so at this point elementorFrontend usually does NOT exist
+	   yet. Testing for it once and giving up would mean the hook below is never
+	   registered - so try now AND again on elementor/frontend/init, whichever
+	   wins. Guarded so the action is only ever added once. */
+	function bindElementorHooks() {
+		if (bindElementorHooks.done) return;
+		if (!window.elementorFrontend || !elementorFrontend.hooks) return;
+		bindElementorHooks.done = true;
 
-	if (window.elementorFrontend && elementorFrontend.hooks) {
 		elementorFrontend.hooks.addAction('frontend/element_ready/global', function ($scope) {
 			applyEditorState();
 			var el = $scope && $scope[0] ? $scope[0] : null;
@@ -413,4 +444,11 @@
 			joinCards();
 		});
 	}
+
+	window.addEventListener('elementor/frontend/init', function () {
+		applyEditorState();
+		bindElementorHooks();
+		initPanels();
+	});
+	bindElementorHooks();
 })();
