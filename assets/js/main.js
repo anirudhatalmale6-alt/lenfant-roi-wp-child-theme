@@ -82,6 +82,71 @@
 		});
 	}
 
+	/* --- 1c. join stacked white cards into one panel ----------------------- */
+	/* The CSS does this with sibling selectors, which is correct on the
+	   theme-rendered page. In Elementor it CANNOT work: every widget sits in
+	   its own .elementor-widget-container, so two carded sections are never
+	   adjacent siblings, and the container's flex gap leaves a strip of teal
+	   between them. That is exactly what the client was seeing.
+
+	   So the run is worked out from geometry instead of from the DOM shape,
+	   which holds however the sections are wrapped. */
+	function joinCards() {
+		var cards = Array.prototype.slice.call( document.querySelectorAll( '.section--card' ) );
+		if ( !cards.length ) return;
+
+		/* Undo any previous pass before measuring, or the second run measures
+		   gaps this function already closed. */
+		cards.forEach( function ( card ) {
+			var inner = card.querySelector( '.card__inner' );
+			if ( inner ) inner.style.borderRadius = '';
+			( card.closest( '.elementor-widget' ) || card ).style.marginTop = '';
+		} );
+
+		var runs = [];
+		var run = [ cards[0] ];
+
+		for ( var i = 1; i < cards.length; i++ ) {
+			var prev = cards[ i - 1 ].getBoundingClientRect();
+			var here = cards[ i ].getBoundingClientRect();
+			/* Small gap - Elementor's flex gap is 20px by default - means the
+			   two belong to the same panel. A real section between them puts
+			   hundreds of pixels here. */
+			if ( here.top - prev.bottom <= 60 ) {
+				run.push( cards[ i ] );
+			} else {
+				runs.push( run );
+				run = [ cards[ i ] ];
+			}
+		}
+		runs.push( run );
+
+		runs.forEach( function ( group ) {
+			group.forEach( function ( card, index ) {
+				var inner = card.querySelector( '.card__inner' );
+				if ( !inner ) return;
+
+				var first = 0 === index;
+				var last  = index === group.length - 1;
+				var r     = getComputedStyle( document.documentElement )
+					.getPropertyValue( '--card-radius' ).trim() || '48px';
+
+				inner.style.borderRadius = first && last ? ''
+					: ( first ? r + ' ' + r + ' 0 0'
+					: ( last ? '0 0 ' + r + ' ' + r : '0' ) );
+
+				if ( !first ) {
+					/* Close the gap on the element the flex gap applies to,
+					   not on the section inside it. */
+					var target = card.closest( '.elementor-widget' ) || card;
+					var gap = card.getBoundingClientRect().top -
+						group[ index - 1 ].getBoundingClientRect().bottom;
+					if ( gap > 0 ) target.style.marginTop = ( -gap ) + 'px';
+				}
+			} );
+		} );
+	}
+
 	/* --- 1b. arabesque blocks only run while they are on screen ------------ */
 	/* Ten lines animating forever in a section nobody is looking at is work the
 	   browser does not need to do. This observer toggles both ways, unlike the
@@ -217,11 +282,14 @@
 	}
 
 	applyEditorState();
-	document.addEventListener('DOMContentLoaded', applyEditorState);
-	window.addEventListener('load', applyEditorState);
+	joinCards();
+	document.addEventListener('DOMContentLoaded', function () { applyEditorState(); joinCards(); });
+	window.addEventListener('load', function () { applyEditorState(); joinCards(); });
 
 	window.addEventListener('scroll', onScroll, { passive: true });
 	window.addEventListener('resize', onScroll, { passive: true });
+	/* Card heights change with the viewport, so the joins are re-measured. */
+	window.addEventListener('resize', joinCards, { passive: true });
 
 	/* Every edit re-renders a widget into brand new nodes. This fires for each
 	   one, so the replacements get revealed too instead of vanishing the moment
@@ -236,6 +304,7 @@
 			if (inEditor()) {
 				revealAll(el);
 			}
+			joinCards();
 		});
 	}
 })();

@@ -645,8 +645,13 @@ body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 .section--card.section-access .arabesque { display: none; }
 
 /* --- p5: the reviews block ------------------------------------------------ */
+/* NB: the space below the photo is NOT a margin on this <figure>. Elementor
+   ships `.elementor .elementor-widget:not(...):not(...) figure { margin: 0 }`
+   at a specificity of (0,4,1), which beats anything sane here - measured, not
+   guessed. So the gap lives on the element BELOW instead, which nothing
+   resets, and this rule only handles the shape. */
 .section-reviews__media {
-	margin: 0 auto clamp(2rem, 3.5vw, 3.5rem);
+	margin-inline: auto;
 	width: min(100%, 1000px);
 	aspect-ratio: 1000 / 310;
 	border-radius: 999px;
@@ -664,7 +669,7 @@ body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 }
 .section-reviews__widget {
 	max-width: 1100px;
-	margin-inline: auto;
+	margin: clamp(3.5rem, 6vw, 7rem) auto 0;
 	padding-right: clamp(0px, 4vw, 60px);
 }
 
