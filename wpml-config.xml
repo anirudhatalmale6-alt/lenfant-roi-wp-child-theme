@@ -49,6 +49,9 @@
 			<key name="access_list" />
 			<key name="access_copy" />
 
+			<key name="family_copy" />
+			<key name="family_items" />
+
 			<key name="reviews_shortcode" />
 
 			<key name="tarifs_title" />
@@ -137,6 +140,12 @@
 		<widget name="lr-reviews">
 			<fields>
 				<field editor_type="LINE">shortcode</field>
+			</fields>
+		</widget>
+		<widget name="lr-family">
+			<fields>
+				<field editor_type="VISUAL">copy</field>
+				<field editor_type="AREA">items</field>
 			</fields>
 		</widget>
 	</elementor-widgets>

@@ -347,6 +347,14 @@ class LR_Widget_Band extends LR_Section_Widget {
 				'type'  => \Elementor\Controls_Manager::WYSIWYG,
 			)
 		);
+		$this->add_control(
+			'panel',
+			array(
+				'label'       => __( 'Opens as panel', 'lenfant-roi-child' ),
+				'type'        => \Elementor\Controls_Manager::TEXT,
+				'description' => __( 'Leave empty for a normal band. Give it an id (e.g. bilinguisme) and it starts closed, opened by the matching icon on the Four icons section.', 'lenfant-roi-child' ),
+			)
+		);
 
 		$this->end_controls_section();
 	}
@@ -363,6 +371,7 @@ class LR_Widget_Band extends LR_Section_Widget {
 				'heading'  => $s['heading'],
 				'value'    => $s['value'],
 				'copy'     => $s['copy'],
+				'panel'    => isset( $s['panel'] ) ? $s['panel'] : '',
 			)
 		);
 	}
@@ -456,6 +465,64 @@ class LR_Widget_Access extends LR_Section_Widget {
 }
 
 
+
+
+/**
+ * Brief p10 - the four icons that open the panels below.
+ */
+class LR_Widget_Family extends LR_Section_Widget {
+
+	public function get_name() {
+		return 'lr-family';
+	}
+
+	public function get_title() {
+		return __( 'Four icons', 'lenfant-roi-child' );
+	}
+
+	public function get_icon() {
+		return 'eicon-gallery-grid';
+	}
+
+	protected function register_controls() {
+		$this->start_controls_section(
+			'content',
+			array( 'label' => __( 'Four icons', 'lenfant-roi-child' ) )
+		);
+
+		$this->add_control(
+			'copy',
+			array(
+				'label'   => __( 'Text on the left', 'lenfant-roi-child' ),
+				'type'    => \Elementor\Controls_Manager::WYSIWYG,
+				'default' => wpautop( lr_opt( 'family_copy' ) ),
+			)
+		);
+		$this->add_control(
+			'items',
+			array(
+				'label'       => __( 'The icons', 'lenfant-roi-child' ),
+				'type'        => \Elementor\Controls_Manager::TEXTAREA,
+				'rows'        => 6,
+				'default'     => lr_opt( 'family_items' ),
+				'description' => __( 'One per line: label|icon file|panel id. The panel id must match the "Opens as panel" field on a Band below.', 'lenfant-roi-child' ),
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function render() {
+		$s = $this->get_settings_for_display();
+
+		echo lr_section_family( // phpcs:ignore WordPress.Security.EscapingOutput
+			array(
+				'copy'  => $s['copy'],
+				'items' => $s['items'],
+			)
+		);
+	}
+}
 
 /**
  * Brief p5 - Google reviews.
@@ -643,4 +710,5 @@ function lr_elementor_widgets( $manager ) {
 	$manager->register( new LR_Widget_Access() );
 	$manager->register( new LR_Widget_Tarifs() );
 	$manager->register( new LR_Widget_Reviews() );
+	$manager->register( new LR_Widget_Family() );
 }

@@ -147,6 +147,60 @@
 		} );
 	}
 
+	/* --- 1d. the four icons open the panels below -------------------------- */
+	/* Buttons, not hover: there is no hover on a phone and the panels would be
+	   unreachable there. Without JS the panels have no [hidden] applied by this
+	   code and stay visible, so the content is never lost. */
+	function initPanels() {
+		var buttons = document.querySelectorAll('.family__btn[data-opens]');
+		if (!buttons.length) return;
+
+		function panelFor(id) { return document.getElementById(id); }
+
+		/* Close everything first so only one is ever open - the panels are full
+		   width sections and two at once pushes the page around confusingly. */
+		function closeAll() {
+			Array.prototype.forEach.call(buttons, function (b) {
+				var panel = panelFor(b.getAttribute('data-opens'));
+				b.classList.remove('is-open');
+				b.setAttribute('aria-expanded', 'false');
+				if (panel) { panel.hidden = true; panel.classList.remove('is-open'); }
+			});
+		}
+
+		Array.prototype.forEach.call(buttons, function (btn) {
+			btn.addEventListener('click', function () {
+				var id = btn.getAttribute('data-opens');
+				var panel = panelFor(id);
+				if (!panel) return;
+
+				var wasOpen = btn.classList.contains('is-open');
+				closeAll();
+
+				if (wasOpen) return;      /* second click closes it */
+
+				panel.hidden = false;
+				/* One frame so the transition has a starting height to run from. */
+				requestAnimationFrame(function () {
+					panel.classList.add('is-open');
+					revealAll(panel);
+					joinCards();
+				});
+				btn.classList.add('is-open');
+				btn.setAttribute('aria-expanded', 'true');
+
+				panel.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+			});
+		});
+
+		if (inEditor()) {
+			/* In the editor he needs to see the panels to edit them. */
+			Array.prototype.forEach.call(document.querySelectorAll('[data-panel]'), function (p) {
+				p.hidden = false;
+			});
+		}
+	}
+
 	/* --- 1b. arabesque blocks only run while they are on screen ------------ */
 	/* Ten lines animating forever in a section nobody is looking at is work the
 	   browser does not need to do. This observer toggles both ways, unlike the
@@ -282,6 +336,7 @@
 	}
 
 	applyEditorState();
+	initPanels();
 	joinCards();
 	document.addEventListener('DOMContentLoaded', function () { applyEditorState(); joinCards(); });
 	window.addEventListener('load', function () { applyEditorState(); joinCards(); });

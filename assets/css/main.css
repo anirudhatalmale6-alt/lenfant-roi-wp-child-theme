@@ -743,6 +743,72 @@ body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 }
 .section-access__copy p + p { margin-top: 1.2rem; }
 
+/* --- p10: the four icons -------------------------------------------------- */
+.section-family { position: relative; padding-block: clamp(4rem, 7vw, 9rem); }
+.section-family__inner {
+	display: grid; grid-template-columns: 1fr 1.15fr;
+	align-items: center; gap: clamp(2.5rem, 5vw, 7rem);
+}
+.section-family__copy { font-size: clamp(1.6rem, 1.9vw, 2.1rem); line-height: 1.7; }
+
+/* Teal panel, rounded on the left and running off the right edge like the slide. */
+.section-family__panel {
+	background: var(--color-brand);
+	border-radius: clamp(28px, 4vw, 56px) 0 0 clamp(28px, 4vw, 56px);
+	padding: clamp(3rem, 5vw, 6rem) clamp(2rem, 4vw, 5rem);
+	margin-right: calc((100vw - min(100vw, var(--container))) / -2 - 2.5rem);
+}
+.family__grid {
+	list-style: none; margin: 0; padding: 0;
+	display: grid; grid-template-columns: 1fr 1fr;
+	gap: clamp(2.5rem, 4vw, 4.5rem) clamp(1.5rem, 3vw, 3rem);
+}
+.family__btn {
+	display: flex; flex-direction: column; align-items: center; gap: 1.4rem;
+	width: 100%; padding: 0; background: none; border: 0;
+	color: inherit; font: inherit; text-align: center;
+	cursor: pointer;
+}
+.family__btn.is-static { cursor: default; }
+
+/* White disc with the gold ring, as on the slide. */
+.family__disc {
+	display: grid; place-items: center;
+	width: clamp(88px, 11vw, 145px); aspect-ratio: 1;
+	background: var(--color-light);
+	border: 2px solid var(--color-primary);
+	border-radius: 50%;
+	transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease;
+}
+.family__disc img { width: 76%; height: auto; }
+
+/* "Once you put the cursor on the small icons, they move" - and the same lift
+   is used for :focus-visible so keyboard users get the identical cue. */
+.family__btn:hover .family__disc,
+.family__btn:focus-visible .family__disc {
+	transform: translateY(-8px) scale(1.04);
+	box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+.family__btn.is-open .family__disc {
+	transform: translateY(-4px);
+	box-shadow: 0 0 0 4px rgba(255,255,255,.45);
+}
+.family__btn:focus { outline: none; }
+.family__btn:focus-visible .family__label { text-decoration: underline; }
+
+.family__label {
+	font-weight: 700; line-height: 1.25;
+	font-size: clamp(1.5rem, 1.8vw, 2rem);
+	color: var(--color-primary);
+}
+
+/* The panels these open (brief 11-14). They are Band sections, so they already
+   have their own look; this only handles the opening. */
+.section-band--panel { overflow: hidden; }
+.section-band--panel:not(.is-open) { max-height: 0; padding-block: 0; }
+.section-band--panel.is-open { max-height: 300rem; }
+.section-band--panel { transition: max-height .5s ease; }
+
 /* --- p15: monthly prices -------------------------------------------------- */
 /* The teal panel's TOP is a wide arc - the mirror of the About block's, same
    1024px trick rounded on the top two corners instead of the bottom two. */
@@ -896,6 +962,9 @@ body.elementor-editor-active .arabesque__line { animation-play-state: running; }
 	.section-access__media { aspect-ratio: 3 / 2; border-radius: 3em; }
 	.section-access__head { align-items: center; }
 	.section-reviews__media { aspect-ratio: 3 / 2; border-radius: 3em; }
+	/* The teal panel cannot bleed off the edge when it is full width. */
+	.section-family__inner { grid-template-columns: 1fr; }
+	.section-family__panel { margin-right: 0; border-radius: clamp(24px, 6vw, 40px); }
 	.section--card .card__inner { margin-inline: .8rem; }
 
 	/* Two price tables side by side are unreadable on a phone. */

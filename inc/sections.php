@@ -401,6 +401,7 @@ function lr_section_band( $args ) {
 			'heading' => '',
 			'value'   => '',
 			'copy'    => '',
+			'panel'   => '',
 		)
 	);
 
@@ -413,8 +414,14 @@ function lr_section_band( $args ) {
 
 	ob_start();
 	?>
-	<section class="section-band section-band--<?php echo esc_attr( $side ); ?>"
-		<?php echo $a['id'] ? ' id="' . esc_attr( $a['id'] ) . '"' : ''; ?>>
+	<?php
+	// A band given a panel id is one of pages 11-14: it starts closed and an
+	// icon on page 10 opens it. Without JS it is simply open, so the content is
+	// never unreachable.
+	$lr_panel = $a['panel'] ? sanitize_title( $a['panel'] ) : '';
+	?>
+	<section class="section-band section-band--<?php echo esc_attr( $side ); ?><?php echo $lr_panel ? ' section-band--panel' : ''; ?>"
+		<?php echo $lr_panel ? ' id="' . esc_attr( $lr_panel ) . '" data-panel hidden' : ( $a['id'] ? ' id="' . esc_attr( $a['id'] ) . '"' : '' ); ?>>
 
 		<?php echo lr_arabesque( 'section' ); // phpcs:ignore WordPress.Security.EscapingOutput ?>
 
@@ -844,6 +851,93 @@ function lr_section_reviews( $args = array() ) {
 				<?php endif; ?>
 
 			</div>
+		</div>
+	</section>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Brief p10 - the four things, as clickable icons.
+ *
+ * His note on the slide: "once you put the cursor on the small icons, they
+ * move... once you click on them you will get more informations - pages just
+ * underneath." So each icon is a real <button> that opens the matching panel
+ * (pages 11-14, which are Band sections carrying a panel id).
+ *
+ * Buttons rather than hover-only, because there is no hover on a phone and the
+ * content would otherwise be unreachable there.
+ *
+ * @param array $args Overrides; see lr_defaults().
+ * @return string
+ */
+function lr_section_family( $args = array() ) {
+	$a = wp_parse_args(
+		$args,
+		array(
+			'copy'  => lr_opt( 'family_copy' ),
+			'items' => lr_opt( 'family_items' ),
+		)
+	);
+
+	$items = array();
+	foreach ( lr_pipe_rows( $a['items'] ) as $row ) {
+		// label|icon|target - lr_pipe_rows only splits the first pipe, so the
+		// icon and target arrive together and are split again here.
+		$rest   = explode( '|', $row[1] );
+		$icon   = isset( $rest[0] ) ? trim( $rest[0] ) : '';
+		$target = isset( $rest[1] ) ? sanitize_title( trim( $rest[1] ) ) : '';
+
+		if ( '' === trim( wp_strip_all_tags( $row[0] ) ) ) {
+			continue;
+		}
+		$items[] = array( $row[0], $icon, $target );
+	}
+
+	if ( ! $items ) {
+		return '';
+	}
+
+	$img = get_stylesheet_directory_uri() . '/assets/img/';
+
+	ob_start();
+	?>
+	<section class="section-family" id="famille">
+		<div class="section-family__inner container">
+
+			<?php if ( '' !== trim( wp_strip_all_tags( $a['copy'] ) ) ) : ?>
+				<div class="section-family__copy" data-animation="reveal" data-delay="100">
+					<?php echo wpautop( wp_kses_post( $a['copy'] ) ); ?>
+				</div>
+			<?php endif; ?>
+
+			<div class="section-family__panel" data-animation="reveal" data-delay="150">
+				<ul class="family__grid">
+					<?php foreach ( $items as $i => $item ) : ?>
+						<?php list( $label, $icon, $target ) = $item; ?>
+						<li class="family__item">
+							<?php if ( $target ) : ?>
+								<button class="family__btn" type="button"
+									data-opens="<?php echo esc_attr( $target ); ?>"
+									aria-expanded="false"
+									aria-controls="<?php echo esc_attr( $target ); ?>">
+							<?php else : ?>
+								<span class="family__btn is-static">
+							<?php endif; ?>
+
+								<span class="family__disc">
+									<?php if ( $icon ) : ?>
+										<img src="<?php echo esc_url( $img . $icon ); ?>" alt="" loading="lazy">
+									<?php endif; ?>
+								</span>
+								<span class="family__label"><?php echo wp_kses_post( $label ); ?></span>
+
+							<?php echo $target ? '</button>' : '</span>'; ?>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+
 		</div>
 	</section>
 	<?php

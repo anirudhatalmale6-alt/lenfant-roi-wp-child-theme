@@ -77,6 +77,10 @@ Accessible en transports gr&acirc;ce &agrave; la proximit&eacute; imm&eacute;dia
 Proche de l&rsquo;autoroute, avec des <strong>places de parking</strong> d&eacute;di&eacute;es pour d&eacute;poser vos enfants en toute s&eacute;r&eacute;nit&eacute;.
 <strong>Un local des poussettes</strong> adapt&eacute; pour des trajets fluides et confortables.',
 
+		// The four things (brief p10). Each line: label|icon|panel it opens.
+		'family_copy'          => 'Parce que le bien-&ecirc;tre de votre enfant va de pair avec le v&ocirc;tre, nous avons imagin&eacute; un accompagnement qui r&eacute;pond aux besoins de toute la famille.',
+		'family_items'         => "Bilinguisme|icon-globe-circle.png|bilinguisme\nTout inclus|icon-tick-circle.png|tout-inclus\nApp Famille|icon-badge.png|app-famille\nAlimentation adapt&eacute;e|icon-chef-circle.png|alimentation",
+
 		// Google reviews (brief p5). The rating and cards come from his plugin;
 		// this only frames them.
 		'reviews_image'        => '',
@@ -361,6 +365,18 @@ function lr_customize_register( $wp_customize ) {
 		__( 'One per line. An empty line is skipped rather than leaving a stray bullet.', 'lenfant-roi-child' )
 	);
 	$text( 'access_copy', 'lr_access', __( 'Text on the right', 'lenfant-roi-child' ), 'textarea' );
+
+	/* --- the four things (brief p10) --------------------------------------- */
+	$wp_customize->add_section(
+		'lr_family',
+		array(
+			'title'       => __( 'The four icons', 'lenfant-roi-child' ),
+			'description' => __( 'Each line is label|icon file|the panel it opens. The panel id must match the one set on a Band section.', 'lenfant-roi-child' ),
+			'panel'       => 'lr_home',
+		)
+	);
+	$text( 'family_copy', 'lr_family', __( 'Text on the left', 'lenfant-roi-child' ), 'textarea' );
+	$text( 'family_items', 'lr_family', __( 'The icons', 'lenfant-roi-child' ), 'textarea', __( 'One per line: label|icon file|panel id', 'lenfant-roi-child' ) );
 
 	/* --- google reviews (brief p5) ---------------------------------------- */
 	$wp_customize->add_section(
