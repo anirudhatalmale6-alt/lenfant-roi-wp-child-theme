@@ -206,6 +206,12 @@
 		}
 
 		Array.prototype.forEach.call(buttons, function (btn) {
+			/* Elementor re-renders widgets, so this can run more than once on
+			   the same button. Bind only once or a click would fire the handler
+			   twice and cancel itself out. */
+			if (btn.dataset.lrBound) return;
+			btn.dataset.lrBound = '1';
+
 			btn.addEventListener('click', function () {
 				var id = btn.getAttribute('data-opens');
 				var panel = panelFor(id);
@@ -231,9 +237,13 @@
 		});
 
 		if (inEditor()) {
-			/* In the editor he needs to see the panels to edit them. */
+			/* In the editor he needs to SEE the panels to edit them. Removing
+			   [hidden] is not enough on its own: the collapse is done with
+			   max-height, so without .is-open they unhide to zero height and
+			   show as thin grey strips - which is exactly what he reported. */
 			Array.prototype.forEach.call(document.querySelectorAll('[data-panel]'), function (p) {
 				p.hidden = false;
+				p.classList.add('is-open');
 			});
 		}
 	}
@@ -397,6 +407,9 @@
 			if (inEditor()) {
 				revealAll(el);
 			}
+			/* A widget that has just re-rendered is a brand new element - it
+			   needs binding and, in the editor, opening. */
+			initPanels();
 			joinCards();
 		});
 	}
