@@ -14,6 +14,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * URL for one of the theme's icon files, carrying the theme version.
+ *
+ * The version matters: when an icon is REPLACED but keeps its filename - which
+ * is how a swapped icon reaches a page already built in Elementor, without the
+ * client having to re-pick it in every widget - the URL does not change, so a
+ * browser that has the old one cached goes on showing it. The client would
+ * reasonably conclude I had not done the work.
+ *
+ * @param string $file File name inside assets/img/.
+ * @return string
+ */
+function lr_icon_src( $file ) {
+	return add_query_arg( 'ver', LR_VERSION, get_stylesheet_directory_uri() . '/assets/img/' . $file );
+}
+
+/**
  * True while Elementor is rendering the editor's preview iframe.
  *
  * Used by the collapsible panels (brief 11-14). They ship with [hidden] so a
@@ -490,7 +506,7 @@ function lr_section_band( $args ) {
 						<?php endif; ?>
 						<?php if ( '' !== $a['icon'] ) : ?>
 							<img class="section-band__icon" alt="" data-animation="reveal" data-delay="150"
-								src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/' . $a['icon'] ); ?>">
+								src="<?php echo esc_url( lr_icon_src( $a['icon'] ) ); ?>">
 						<?php endif; ?>
 					</div>
 
@@ -976,7 +992,7 @@ function lr_section_family( $args = array() ) {
 
 								<span class="family__disc">
 									<?php if ( $icon ) : ?>
-										<img src="<?php echo esc_url( $img . $icon ); ?>" alt="" loading="lazy">
+										<img src="<?php echo esc_url( lr_icon_src( $icon ) ); ?>" alt="" loading="lazy">
 									<?php endif; ?>
 								</span>
 								<span class="family__label"><?php echo wp_kses_post( $label ); ?></span>
